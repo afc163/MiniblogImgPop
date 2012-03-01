@@ -63,10 +63,10 @@
 //							3.修正新浪微博切换到提到我的微博等页面后绑定失效的问题
 //												  
 
-(function(){
+(function() {
 	//dont handle iframe situation
 	//if(top != window) return;		//有些企业版是嵌在iframe里的啊！不能不处理啊！只能干掉了。。。
-	var imgPop = (function(){
+	var imgPop = (function() {
 		//var date = null; //用于计算运行时间，调试使用
 		var that = this,
 			cache = {};
@@ -79,98 +79,85 @@
 		
 		var miniblogsConfig = {
 			'qing.weibo.com':{
-				feedArea	:'#theLatestFeed',
 				feedSelector:'.imgZoomIn',
 				sFrag		:'',
 				bFrag		:''
 			},
 			'q.weibo.com':{
-				feedArea	:'#pl_content_homeFeed',
-				feedSelector:'.bigcursor',
+				feedSelector:'img.bigcursor',
 				sFrag		:'thumbnail',
 				bFrag		:'large'
 			},
 			'weibo.com':{
-				feedArea	:'#plc_main,#feed_list',
 				feedSelector:'.feed_img,.bigcursor',
 				sFrag		:'thumbnail',
 				bFrag		:'bmiddle'
 			},
 			't.sohu.com':{
-				feedArea	:'#twitter_container',
 				feedSelector:'.pic',
 				sFrag		:['/f_','_1.jpg'],
 				bFrag		:['/m_','_0.jpg']
 			},
 			't.163.com':{
-				feedArea	:'#homeTimelineList',
 				feedSelector:'.status-sPhoto',
 				sFrag		:'120&h=120',
 				bFrag		:'460'
 			},
 			't.qq.com':{
-				feedArea	:'#talkList',
 				feedSelector:'.pic img',
 				sFrag		:'/160',
 				bFrag		:'/460'
 			},
 			't.titan24.com':{
-				feedArea	:'.feedBoxct',
 				feedSelector:'.imgBig',
 				sFrag		:'_thumbnail',
 				bFrag		:'_middle'
 			},
 			't.people.com.cn':{
-				feedArea	:'.marquee',
 				feedSelector:'.miniImg',
 				sFrag:'/s_',
 				bFrag:'/b_'
 			},
 			't.ifeng.com':{
-				feedArea	:'#twitte_list',
 				feedSelector:'.zoom_in_image img',
 				sFrag		:'/128x160_',
 				bFrag		:'/520x0_'
 			},
 			'my.tianya.cn':{
-				feedArea	:'#tt-feed-box-ul',
 				feedSelector:'.pic-zoomin',
 				bigSrc		:'_middlepic',
 				sFrag		:'small',
 				bFrag		:'middle'
 			},
 			'diandian.com':{
-				feedArea	:'#feed-list',
 				feedSelector:'.feed-img',
 				bigSrc		:'imgsrc'
 			},
 			'digu.com':{
-				feedArea	:'#JS_Timeline',
 				feedSelector:'.picture',
 				sFrag		:'_100x75',
 				bFrag		:'_640x480'
 			},
 			'qzone.qq.com':{
-				feedArea	:'#_oldFeeds',
 				feedSelector:'.img_box a',
 				sFrag		:'/160',
 				bFrag		:'/460'	
 			}
 		};
 
-		var $ = function(id){
+		var $ = function(id) {
 			return document.getElementById(id);	
 		};
 
-		var $C = function(tag){
+		var $C = function(tag) {
 			return document.createElement(tag);
 		};
 
-		var $CN = function(className){
+		var $CN = function(className) {
 			return document.getElementsByClassName(className);
 		};
 
-		var $Q = function(selector, node){
+		var $Q = function(selector, node) {
 			var nodes = [];
 			selector = selector.split(',');
 			for(var i=0; i<selector.length; i++) {
@@ -179,7 +166,7 @@
 			return nodes;
 		};
 
-		var getPos = function(source){
+		var getPos = function(source) {
 			var pt = {x:0,y:0,width:source.offsetWidth,height:source.offsetHeight};
 			do{
 				pt.x += source.offsetLeft;
@@ -189,12 +176,12 @@
 			return pt;
 		};
 
-		var getImgSize = function(imgsrc){
+		var getImgSize = function(imgsrc) {
 			var cInfo = cache.imgInfo;
 			//console.info(imgsrc + ' [' + cInfo.src + '] ' + cInfo.height);
-			if(cInfo[imgsrc] && cInfo[imgsrc].height){
+			if(cInfo[imgsrc] && cInfo[imgsrc].height) {
 				//console.info(imgsrc+' : cache aimed 1');
-				return function(){
+				return function() {
 					//console.info('cache aimed 2');
 					return {
 						width: cInfo[imgsrc].width,
@@ -202,42 +189,44 @@
 					};
 				};
 			}
-			else{
+			else {
 				var img = $('imgPop'), size, w, h;
-				if(img){
+				if(img) {
 					img.src = '';
 					img.removeAttribute('src');
 				}
 				else{
 					img = createImgPop(imgsrc);
-				};
+				}
 				img.src = imgsrc;
-				return function(){
+				return function() {
 					w = parseInt(img.offsetWidth);
 					h = parseInt(img.offsetHeight);
-					if(w === cInfo.width && h === cInfo.height){
-						return {width:0, height:0};
+					if(w === cInfo.width && h === cInfo.height) {
+						return { width:0, height:0 };
 					}
-					else{
-						return {width:w, height:h};
+					else {
+						cInfo.width = w;
+						cInfo.height = h;
+						return { width:w, height:h };
 					}
 				};
 			}
 		};
 
-		var saveImgInfo = function(o){
+		var saveImgInfo = function(o) {
 			//保存上一次图片的信息，用以缓存
-			if(!cache.imgInfo[o.src] && parseInt(o.offsetHeight) !== 10 && parseInt(o.offsetHeight) !== 30){
+			if(!cache.imgInfo[o.src] && parseInt(o.offsetHeight) !== 10 && parseInt(o.offsetHeight) !== 30) {
 				cache.imgInfo[o.src] = {width:parseInt(o.offsetWidth), height:parseInt(o.offsetHeight)};
 				//console.info(o.src+' : cache added.');
 			}
 		};
 
-		var getSiteName = function(){
+		var getSiteName = function() {
 			if(cache.siteName) return cache.siteName;
 			var i, each;
-			for(each in miniblogsConfig){
-				if(cache.loc.indexOf(each) != -1){
+			for(each in miniblogsConfig) {
+				if(cache.loc.indexOf(each) != -1) {
 					cache.siteName = each;
 					return each;
 				}
@@ -245,7 +234,7 @@
 			return '';
 		};
 
-		var getBigImgsrc = function(obj){
+		var getBigImgsrc = function(obj) {
 			var tempimgs,
 				tempimg,
 				imgsrc,
@@ -253,12 +242,12 @@
 				l,
 				sname = getSiteName(),
 				config = (sname && miniblogsConfig[sname]);
-			if(obj.tagName === 'IMG' || obj.tagName === 'img'){
+			if(obj.tagName === 'IMG' || obj.tagName === 'img') {
 				tempimg = obj;
 			}
 			else{
 				tempimgs = obj.getElementsByTagName('IMG');
-				if(tempimgs == null || tempimgs.length == 0){
+				if(tempimgs == null || tempimgs.length == 0) {
 					throw 'cant found the img node.';
 				}
 				else{
@@ -275,8 +264,8 @@
 			imgsrc = tempimg.getAttribute('src');
 			//console.info(imgsrc);
 			imgsrc = decodeURIComponent(imgsrc);
-			if(typeof config['sFrag'] === 'object'){
-				for(i=0, l=config['sFrag'].length; i<l; i++){
+			if(typeof config['sFrag'] === 'object') {
+				for(i=0, l=config['sFrag'].length; i<l; i++) {
 					imgsrc = imgsrc.replace(config['sFrag'][i],config['bFrag'][i]);
 				}
 			}
@@ -286,7 +275,7 @@
 			return imgsrc;
 		};
 
-		var _fade = function(spec,callback){
+		var _fade = function(spec,callback) {
 			var obj = spec.obj,
 				fromOpacity,
 				toOpacity;
@@ -297,18 +286,18 @@
 			obj.style.visibility = '';
 			//渐变
 			cache.timer && clearInterval(cache.timer);
-			cache.timer = setInterval(function(){
+			cache.timer = setInterval(function() {
 				//console.info(obj.style.opacity + ' ' + toOpacity);
-				if(obj.style.opacity < toOpacity){
+				if(obj.style.opacity < toOpacity) {
 					obj.style.opacity = parseFloat(obj.style.opacity) + 0.2;
 				}
-				else if(obj.style.opacity > toOpacity){
+				else if(obj.style.opacity > toOpacity) {
 					//修复一个chrome下图片不消失的bug
 					var temp = parseFloat(obj.style.opacity) - 0.2;
 					temp = (temp <= 0.01) ? 0 : temp;
 					obj.style.opacity = temp;
 				}
-				else if(obj.style.opacity == toOpacity){
+				else if(obj.style.opacity == toOpacity) {
 					callback && callback.call(this);
 					clearInterval(cache.timer);
 				}
@@ -317,7 +306,7 @@
 			},25);
 		};
 
-		var createImgPop = function(imgsrc, ifShow){
+		var createImgPop = function(imgsrc, ifShow) {
 			ifShow = ifShow || false;
 			$('imgPop') && document.body.removeChild($('imgPop'));
 			var temp = $C('img'),
@@ -328,52 +317,55 @@
 			temp.style.position = 'absolute';
 			temp.style.visibility = 'hidden';
 			temp.style.border = '5px solid #fff';
-			if(ifShow){
+			if(ifShow) {
 				//for firefox & chrome 's diff
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				temp.style.top = scrollTop+(window.innerHeight-imgHeight)/2 + 'px';
+				var tempTop = scrollTop+(window.innerHeight-imgHeight)/2;
+				temp.style.top = (tempTop > 0 ? tempTop : 0) + 'px';
 				temp.style.left = pos.x+pos.width+80+'px';
-				temp.style.zIndex = '500';
+				temp.style.zIndex = 9999;
 				temp.style.opacity = 0;
-				temp.style.cssText += 'box-shadow:4px 4px 15px #333;';
+				temp.style.cssText += '-moz-box-shadow:4px 4px 15px #000;';
+				temp.style.cssText += '-webkit-box-shadow:4px 4px 15px #000;';
 				temp.style.visibility = '';
 			}
 			document.body.appendChild(temp);
 			return temp;
 		};
 
-		var appendPod = function(imgsrc,pos,imgSizeFunc){
+		var appendPod = function(imgsrc,pos,imgSizeFunc) {
 			//防止图片未载入时获取图片大小为0的情况
 			//alert(imgSizeFunc().height);
 			var imgHeight = imgSizeFunc().height,
 				that,
 				imgPop,
 				scrollTop;
-			//console.info(imgHeight);
+			console.info(imgsrc, imgHeight);
 			//imgHeight小于30px，很主观地判断其图片尚未载入
-			if(!imgHeight || imgHeight <= 30){
+			if(!imgHeight || imgHeight <= 30) {
 				that = this;
-				cache.timerHeight = setTimeout(function(){
+				cache.timerHeight = setTimeout(function() {
 					appendPod.call(that,imgsrc,pos,imgSizeFunc);
 				}, 40);
 				return;
 			}
 		
 			imgPop = $('imgPop');
-			if(!imgPop){
-				createImgPop(imgsrc,true);
+			if(!imgPop) {
+				createImgPop(imgsrc, true);
 			}
-			else{
+			else{	
 				//for firefox & chrome 's diff
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				imgPop.style.top = scrollTop+(window.innerHeight-imgHeight)/2 + 'px';
+				var tempTop = scrollTop+(window.innerHeight-imgHeight)/2;
+				imgPop.style.top = (tempTop > 0 ? tempTop : 0) + 'px';
 				imgPop.style.left = pos.x+pos.width+80+'px';
 				imgPop.style.border = '5px solid #fff';
-				imgPop.style.zIndex = '500';
+				imgPop.style.zIndex = 9999;
 				imgPop.style.opacity = 0;
+				imgPop.style.visibility = '';
 				imgPop.style.cssText += '-moz-box-shadow:4px 4px 15px #000;';
 				imgPop.style.cssText += '-webkit-box-shadow:4px 4px 15px #000;';
-				imgPop.style.visibility = '';
 				imgPop.src = imgsrc;
 			}
 			_fade({obj:imgPop,to:100});
@@ -384,9 +376,9 @@
 			saveImgInfo(imgPop);
 		};
 
-		var removePop = function(){
-			return function(e){
-				if(cache.zPressing === false){
+		var removePop = function() {
+			return function(e) {
+				if(cache.zPressing === false) {
 					e.stopPropagation();
 					cache.timer && clearInterval(cache.timer);
 					var theObj = $('imgPop');
@@ -394,8 +386,8 @@
 					//保存上一次图片的信息，用以缓存
 					//saveImgInfo(theObj);
 
-					if(theObj){
-						_fade({obj:theObj,to:0},function(){
+					if(theObj) {
+						_fade({obj:theObj,to:0},function() {
 							theObj.src = '';
 							theObj.removeAttribute('src');
 							theObj.style.visibility = 'hidden';
@@ -405,14 +397,14 @@
 			};
 		};
 
-		var imgHover = function(img){
+		var imgHover = function(img) {
 			var imgsrc = getBigImgsrc(img), getSize;
-			return function(e){
-				if(!/http.*/.test(imgsrc)){
+			return function(e) {
+				if(!/http.*/.test(imgsrc)) {
 					imgsrc = getBigImgsrc(img);
 				}
 				//console.info('shift pressing : ' + cache.shiftPressing);
-				if(cache.zPressing === false){
+				if(cache.zPressing === false) {
 					//console.time('test2');
 					e.stopPropagation();
 					cache.timerHeight && clearInterval(cache.timerHeight);
@@ -424,13 +416,13 @@
 			};
 		};
 
-		var imgOut = function(){
+		var imgOut = function() {
 			return removePop();
 		};
 
 		var delegate = function(el, eventType, handler, selector) {
 			el = el || document;
-			el.addEventListener(eventType, function(e){
+			el.addEventListener(eventType, function(e) {
 				var node = getHandlerNode(e, selector, el);	
 				node && handler.call(el, e, node);
 			}, false); 
@@ -464,7 +456,7 @@
 			}
 		};
 
-		var isInDomChain = function(target, parent, ancestor, maxDepth){
+		var isInDomChain = function(target, parent, ancestor, maxDepth) {
 			var ancestor = ancestor || null,
 				maxDepth = maxDepth || 100;
 			if (target == ancestor) {
@@ -484,31 +476,31 @@
 		};
 
 		return {
-			prepare : function(){
+			prepare : function() {
 				this.sitename = getSiteName();
 				this.config = (this.sitename && miniblogsConfig[this.sitename]);
 			},
-			addImgsEventListener : function(){
-				delegate($Q(this.config['feedArea'])[0], 'mouseover', function(e, node){
+			addImgsEventListener : function() {
+				delegate(document.body, 'mouseover', function(e, node) {
 					imgHover(node).call(null, e);
 				}, this.config['feedSelector']);
 
-				delegate($Q(this.config['feedArea'])[0], 'mouseout', imgOut(), this.config['feedSelector']);
+				delegate(document.body, 'mouseout', imgOut(), this.config['feedSelector']);
 			},
-			addShiftListener : function(){
-				window.addEventListener('keydown',function(e){
-					if(e.keyCode === 90){
+			addShiftListener : function() {
+				window.addEventListener('keydown',function(e) {
+					if(e.keyCode === 90) {
 						cache.zPressing = true;
 					}
 				},false);
-				window.addEventListener('keyup',function(e){
-					if(e.keyCode === 90){
+				window.addEventListener('keyup',function(e) {
+					if(e.keyCode === 90) {
 						cache.zPressing = false;
 						removePop()(e);
 					}
 				},false);
 			},
-			init: function(){
+			init: function() {
 				//准备必要的数据
 				this.prepare();
 				//绑定imgs hover事件
