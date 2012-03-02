@@ -89,7 +89,7 @@
 				bFrag		:'large'
 			},
 			'weibo.com':{
-				feedSelector:'.feed_img,.bigcursor',
+				feedSelector:'div.bigcursor',
 				sFrag		:'thumbnail',
 				bFrag		:'bmiddle'
 			},
@@ -168,17 +168,16 @@
 
 		var getPos = function(source) {
 			var pt = {x:0,y:0,width:source.offsetWidth,height:source.offsetHeight};
-			do{
+			do {
 				pt.x += source.offsetLeft;
 				pt.y += source.offsetTop;
 				source = source.offsetParent;
-			}while(source);
+			} while (source);
 			return pt;
 		};
 
 		var getImgSize = function(imgsrc) {
 			var cInfo = cache.imgInfo;
-			//console.info(imgsrc + ' [' + cInfo.src + '] ' + cInfo.height);
 			if(cInfo[imgsrc] && cInfo[imgsrc].height) {
 				//console.info(imgsrc+' : cache aimed 1');
 				return function() {
@@ -192,7 +191,7 @@
 			else {
 				var img = $('imgPop'), size, w, h;
 				if(img) {
-					img.src = '';
+					img.src = 'data:image/gif;base64,R0lGODlhCAAHAIAAAAAAAAAAACH5BAEAAAAALAAAAAAIAAcAAAIHhI+py+1QAAA7';
 					img.removeAttribute('src');
 				}
 				else{
@@ -202,6 +201,7 @@
 				return function() {
 					w = parseInt(img.offsetWidth);
 					h = parseInt(img.offsetHeight);
+					console.log(w, h);
 					if(w === cInfo.width && h === cInfo.height) {
 						return { width:0, height:0 };
 					}
@@ -306,69 +306,50 @@
 			},25);
 		};
 
-		var createImgPop = function(imgsrc, ifShow) {
-			ifShow = ifShow || false;
+		var createImgPop = function(imgsrc) {
 			$('imgPop') && document.body.removeChild($('imgPop'));
-			var temp = $C('img'),
-				scrollTop;
+			var temp = $C('img')
 			temp.id = 'imgPop';
 			temp.src = imgsrc;
 			temp.style.maxWidth = '450px';
 			temp.style.position = 'absolute';
 			temp.style.visibility = 'hidden';
-			temp.style.border = '5px solid #fff';
-			if(ifShow) {
-				//for firefox & chrome 's diff
-				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				var tempTop = scrollTop+(window.innerHeight-imgHeight)/2;
-				temp.style.top = (tempTop > 0 ? tempTop : 0) + 'px';
-				temp.style.left = pos.x+pos.width+80+'px';
-				temp.style.zIndex = 9999;
-				temp.style.opacity = 0;
-				temp.style.cssText += '-moz-box-shadow:4px 4px 15px #000;';
-				temp.style.cssText += '-webkit-box-shadow:4px 4px 15px #000;';
-				temp.style.visibility = '';
-			}
+			temp.style.border = '7px solid rgba(255, 255, 255, 0.7)';			
 			document.body.appendChild(temp);
 			return temp;
 		};
 
-		var appendPod = function(imgsrc,pos,imgSizeFunc) {
+		var appendPod = function(imgsrc, pos, imgSizeFunc) {
 			//防止图片未载入时获取图片大小为0的情况
 			//alert(imgSizeFunc().height);
 			var imgHeight = imgSizeFunc().height,
 				that,
 				imgPop,
 				scrollTop;
-			console.info(imgsrc, imgHeight);
-			//imgHeight小于30px，很主观地判断其图片尚未载入
-			if(!imgHeight || imgHeight <= 30) {
+			//console.info(imgsrc, imgHeight);
+			//imgHeight小于50px，很主观地判断其图片尚未载入
+			if(!imgHeight || imgHeight <= 50) {
 				that = this;
 				cache.timerHeight = setTimeout(function() {
-					appendPod.call(that,imgsrc,pos,imgSizeFunc);
+					appendPod.call(that, imgsrc, pos, imgSizeFunc);
 				}, 40);
 				return;
 			}
-		
+
 			imgPop = $('imgPop');
-			if(!imgPop) {
-				createImgPop(imgsrc, true);
-			}
-			else{	
-				//for firefox & chrome 's diff
-				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				var tempTop = scrollTop+(window.innerHeight-imgHeight)/2;
-				imgPop.style.top = (tempTop > 0 ? tempTop : 0) + 'px';
-				imgPop.style.left = pos.x+pos.width+80+'px';
-				imgPop.style.border = '5px solid #fff';
-				imgPop.style.zIndex = 9999;
-				imgPop.style.opacity = 0;
-				imgPop.style.visibility = '';
-				imgPop.style.cssText += '-moz-box-shadow:4px 4px 15px #000;';
-				imgPop.style.cssText += '-webkit-box-shadow:4px 4px 15px #000;';
-				imgPop.src = imgsrc;
-			}
-			_fade({obj:imgPop,to:100});
+			imgPop.src = imgsrc;
+			//for firefox & chrome 's diff
+			scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+			var tempTop = (window.innerHeight - imgHeight) > 0 ? (window.innerHeight - imgHeight) : 0;
+			imgPop.style.top = (scrollTop + tempTop/2) + 'px';
+			imgPop.style.left = pos.x + pos.width + 80 + 'px';
+			imgPop.style.zIndex = 9999;
+			imgPop.style.opacity = 0;
+			imgPop.style.cssText += '-moz-box-shadow:4px 4px 12px #000;';
+			imgPop.style.cssText += '-webkit-box-shadow:4px 4px 12px #000;';
+			imgPop.style.visibility = '';
+			
+			_fade({obj:imgPop, to:100});
 			div_bigImg = null;
 			bigImg = null;
 
@@ -387,7 +368,7 @@
 					//saveImgInfo(theObj);
 
 					if(theObj) {
-						_fade({obj:theObj,to:0},function() {
+						_fade({obj:theObj, to:0},function() {
 							theObj.src = '';
 							theObj.removeAttribute('src');
 							theObj.style.visibility = 'hidden';
@@ -410,7 +391,7 @@
 					cache.timerHeight && clearInterval(cache.timerHeight);
 					cache.timer && clearInterval(cache.timer);
 					getSize = getImgSize(imgsrc);
-					appendPod(imgsrc,getPos(img),getSize);
+					appendPod(imgsrc, getPos(img), getSize);
 					//console.timeEnd('test2');
 				}
 			};
