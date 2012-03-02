@@ -61,7 +61,10 @@
 // @modified	2011.11.17	1.修复一个在chrome下图片透明度为0时仍然遮盖网页的bug
 //							2.修复在淘宝商城、京东商城等新浪企业微博下无效的问题
 //							3.修正新浪微博切换到提到我的微博等页面后绑定失效的问题
-//												  
+// @modified	2012.03.02	1.修正chrome下图片定位不准的bug
+//							2.提高图片的zIndex使其覆盖头部导航
+//							3.超屏大图定位不居中，而是定位到可视范围顶部
+//							4.优化部分代码，提高效率
 
 (function() {
 	//dont handle iframe situation
@@ -191,7 +194,7 @@
 			else {
 				var img = $('imgPop'), size, w, h;
 				if(img) {
-					img.src = 'data:image/gif;base64,R0lGODlhCAAHAIAAAAAAAAAAACH5BAEAAAAALAAAAAAIAAcAAAIHhI+py+1QAAA7';
+					img.src = 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 					img.removeAttribute('src');
 				}
 				else{
@@ -369,7 +372,7 @@
 
 					if(theObj) {
 						_fade({obj:theObj, to:0},function() {
-							theObj.src = '';
+							theObj.src = 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 							theObj.removeAttribute('src');
 							theObj.style.visibility = 'hidden';
 						});
