@@ -2,7 +2,7 @@
 // @name			Miniblog Img Pop
 // @namespace		http://userscripts.org/users/83994
 // @description		微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version			2.04
+// @version			2.1
 // @include			http://*qing.weibo.com/*
 // @include			http://*weibo.com/*
 // @include			http://*t.163.com/*
@@ -65,6 +65,8 @@
 //							2.提高图片的zIndex使其覆盖头部导航
 //							3.超屏大图定位不居中，而是定位到可视范围顶部
 //							4.优化部分代码，提高效率
+// @modified	2012.03.03	1.使用new Image来获得图片高度，彻底修正chrome下图片定位不准的bug
+//							2.使用GM_addStyle，优化图片边框样式
 
 (function() {
 	//dont handle iframe situation
@@ -76,6 +78,7 @@
 		cache.timer = null,
 		cache.timerHeight = null,
 		cache.siteName = '',
+		cache.imgObj = null,
 		cache.loc = window.location.href,
 		cache.imgInfo = {},
 		cache.zPressing = false;
@@ -192,35 +195,22 @@
 				};
 			}
 			else {
-				var img = $('imgPop'), size, w, h;
-				if(img) {
-					img.src = 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
-					img.removeAttribute('src');
-				}
-				else{
-					img = createImgPop(imgsrc);
-				}
-				img.src = imgsrc;
+				var size, w, h;
+				cache.imgObj = new Image();
+				cache.imgObj.src = imgsrc;
 				return function() {
-					w = parseInt(img.offsetWidth);
-					h = parseInt(img.offsetHeight);
-					console.log(w, h);
-					if(w === cInfo.width && h === cInfo.height) {
-						return { width:0, height:0 };
-					}
-					else {
-						cInfo.width = w;
-						cInfo.height = h;
-						return { width:w, height:h };
-					}
+					w = parseInt(cache.imgObj.width);
+					h = parseInt(cache.imgObj.height);
+					//console.log(w, h);
+					return { width:w, height:h };
 				};
 			}
 		};
 
 		var saveImgInfo = function(o) {
 			//保存上一次图片的信息，用以缓存
-			if(!cache.imgInfo[o.src] && parseInt(o.offsetHeight) !== 10 && parseInt(o.offsetHeight) !== 30) {
-				cache.imgInfo[o.src] = {width:parseInt(o.offsetWidth), height:parseInt(o.offsetHeight)};
+			if(!cache.imgInfo[o.src] && parseInt(o.width) !== 10 && parseInt(o.height) !== 30) {
+				cache.imgInfo[o.src] = {width:parseInt(o.width), height:parseInt(o.height)};
 				//console.info(o.src+' : cache added.');
 			}
 		};
@@ -310,14 +300,11 @@
 		};
 
 		var createImgPop = function(imgsrc) {
-			$('imgPop') && document.body.removeChild($('imgPop'));
-			var temp = $C('img')
-			temp.id = 'imgPop';
-			temp.src = imgsrc;
-			temp.style.maxWidth = '450px';
-			temp.style.position = 'absolute';
+			$('miniblogImgPop') && document.body.removeChild($('miniblogImgPop'));
+			var temp = $C('img');
+			temp.id = 'miniblogImgPop';
 			temp.style.visibility = 'hidden';
-			temp.style.border = '7px solid rgba(255, 255, 255, 0.7)';			
+			temp.src = imgsrc;
 			document.body.appendChild(temp);
 			return temp;
 		};
@@ -339,17 +326,19 @@
 				return;
 			}
 
-			imgPop = $('imgPop');
-			imgPop.src = imgsrc;
+			imgPop = $('miniblogImgPop');
+			if(!imgPop) {
+				imgPop = createImgPop(imgsrc);
+			}
+			else {
+				imgPop.src = imgsrc;
+			}
 			//for firefox & chrome 's diff
 			scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
 			var tempTop = (window.innerHeight - imgHeight) > 0 ? (window.innerHeight - imgHeight) : 0;
 			imgPop.style.top = (scrollTop + tempTop/2) + 'px';
 			imgPop.style.left = pos.x + pos.width + 80 + 'px';
-			imgPop.style.zIndex = 9999;
 			imgPop.style.opacity = 0;
-			imgPop.style.cssText += '-moz-box-shadow:4px 4px 12px #000;';
-			imgPop.style.cssText += '-webkit-box-shadow:4px 4px 12px #000;';
 			imgPop.style.visibility = '';
 			
 			_fade({obj:imgPop, to:100});
@@ -357,7 +346,7 @@
 			bigImg = null;
 
 			//保存上一次图片的信息，用以缓存
-			saveImgInfo(imgPop);
+			saveImgInfo(cache.imgObj);
 		};
 
 		var removePop = function() {
@@ -365,15 +354,11 @@
 				if(cache.zPressing === false) {
 					e.stopPropagation();
 					cache.timer && clearInterval(cache.timer);
-					var theObj = $('imgPop');
-
-					//保存上一次图片的信息，用以缓存
-					//saveImgInfo(theObj);
+					var theObj = $('miniblogImgPop');
 
 					if(theObj) {
-						_fade({obj:theObj, to:0},function() {
-							theObj.src = 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
-							theObj.removeAttribute('src');
+						_fade({obj:theObj, to:0}, function() {
+							cache.imgObj.src = '';
 							theObj.style.visibility = 'hidden';
 						});
 					}
@@ -496,5 +481,15 @@
 	})();
 
 	imgPop.init();
+
+	//增加自定义样式
+	GM_addStyle("\
+		#miniblogImgPop {\
+			box-shadow: 0 3px 15px rgba(34, 25, 25, 1);\
+			border: 7px solid rgba(255, 255, 255, 0.7);\
+			z-index: 9999;\
+			position: absolute;\
+		}\
+	");
 
 })();
