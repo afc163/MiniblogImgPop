@@ -20,6 +20,7 @@
 
 // @author		afc163
 // @weibo		http://weibo.com/afc163
+// @code		https://github.com/afc163/miniblogImgPop
 // @blog		http://pianyou.me
 // @date		2010.8.12
 // @modified	2010.9.14
