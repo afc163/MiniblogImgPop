@@ -360,6 +360,7 @@
 					if(theObj) {
 						_fade({obj:theObj, to:0}, function() {
 							cache.imgObj.src = '';
+							theObj.src = '',
 							theObj.style.visibility = 'hidden';
 						});
 					}
