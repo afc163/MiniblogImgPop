@@ -91,12 +91,12 @@
 				bFrag		:''
 			},
 			'q.weibo.com':{
-				feedSelector:'img.bigcursor',
+				feedSelector:'.bigcursor',
 				sFrag		:'thumbnail',
 				bFrag		:'large'
 			},
 			'weibo.com':{
-				feedSelector:'div.bigcursor',
+				feedSelector:'.bigcursor',
 				sFrag		:'thumbnail',
 				bFrag		:'bmiddle'
 			},
