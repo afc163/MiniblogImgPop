@@ -2,7 +2,7 @@
 // @name			Miniblog Img Pop
 // @namespace		http://userscripts.org/users/83994
 // @description		微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version			2.1
+// @version			2.2
 // @include			http://*qing.weibo.com/*
 // @include			http://*weibo.com/*
 // @include			http://*t.163.com/*
@@ -11,7 +11,7 @@
 // @include			http://*t.ifeng.com/*
 // @include			http://*t.titan24.com/*
 // @include			http://*t.people.com.cn/*
-// @include			http://*my.tianya.cn/*
+// @include			http://*tianya.cn/*
 // @include			http://*diandian.com/*
 // @include			http://*.digu.com/*
 // @include			http://*qzone.qq.com/*
@@ -69,355 +69,276 @@
 // @modified	2012.03.03	1.使用new Image来获得图片高度，彻底修正chrome下图片定位不准的bug
 //							2.使用GM_addStyle，优化图片边框样式
 
+
 (function() {
-	//dont handle iframe situation
-	//if(top != window) return;		//有些企业版是嵌在iframe里的啊！不能不处理啊！只能干掉了。。。
-	var imgPop = (function() {
-		//var date = null; //用于计算运行时间，调试使用
-		var that = this,
-			cache = {};
-		cache.timer = null,
-		cache.timerHeight = null,
-		cache.siteName = '',
-		cache.imgObj = null,
-		cache.loc = window.location.href,
-		cache.imgInfo = {},
-		cache.zPressing = false;
-		
-		var miniblogsConfig = {
-			'qing.weibo.com':{
-				feedSelector:'.imgZoomIn',
-				sFrag		:'',
-				bFrag		:''
-			},
-			'q.weibo.com':{
-				feedSelector:'.bigcursor',
-				sFrag		:'thumbnail',
-				bFrag		:'large'
-			},
-			'weibo.com':{
-				feedSelector:'.bigcursor',
-				sFrag		:'thumbnail',
-				bFrag		:'bmiddle'
-			},
-			't.sohu.com':{
-				feedSelector:'.pic',
-				sFrag		:['/f_','_1.jpg'],
-				bFrag		:['/m_','_0.jpg']
-			},
-			't.163.com':{
-				feedSelector:'.status-sPhoto',
-				sFrag		:'120&h=120',
-				bFrag		:'460'
-			},
-			't.qq.com':{
-				feedSelector:'.pic img',
-				sFrag		:'/160',
-				bFrag		:'/460'
-			},
-			't.titan24.com':{
-				feedSelector:'.imgBig',
-				sFrag		:'_thumbnail',
-				bFrag		:'_middle'
-			},
-			't.people.com.cn':{
-				feedSelector:'.miniImg',
-				sFrag:'/s_',
-				bFrag:'/b_'
-			},
-			't.ifeng.com':{
-				feedSelector:'.zoom_in_image img',
-				sFrag		:'/128x160_',
-				bFrag		:'/520x0_'
-			},
-			'my.tianya.cn':{
-				feedSelector:'.pic-zoomin',
-				bigSrc		:'_middlepic',
-				sFrag		:'small',
-				bFrag		:'middle'
-			},
-			'diandian.com':{
-				feedSelector:'.feed-img',
-				bigSrc		:'imgsrc'
-			},
-			'digu.com':{
-				feedSelector:'.picture',
-				sFrag		:'_100x75',
-				bFrag		:'_640x480'
-			},
-			'qzone.qq.com':{
-				feedSelector:'.img_box a',
-				sFrag		:'/160',
-				bFrag		:'/460'	
-			}
-		};
 
-		var $ = function(id) {
-			return document.getElementById(id);	
-		};
+    // 各微博站点的feed配置
+    var MIPConfig = {
+        'qing.weibo.com':{
+            feedSelector:'.imgZoomIn',
+            sFrag		:'',
+            bFrag		:''
+        },
+        'q.weibo.com':{
+            feedSelector:'.bigcursor',
+            sFrag		:'thumbnail',
+            bFrag		:'large'
+        },
+        'weibo.com':{
+            feedSelector:'.bigcursor',
+            sFrag		:'thumbnail',
+            bFrag		:'bmiddle'
+        },
+        't.sohu.com':{
+            feedSelector:'.pic',
+            sFrag		:['/f_','_1.jpg'],
+            bFrag		:['/m_','_0.jpg']
+        },
+        't.163.com':{
+            feedSelector:'.tweet-preview-pic',
+            sFrag		:'w=140&h=140',
+            bFrag		:'w=440'
+        },
+        't.qq.com':{
+            feedSelector:'.pic img',
+            sFrag		:'/160',
+            bFrag		:'/460'
+        },
+        't.titan24.com':{
+            feedSelector:'.imgBig',
+            sFrag		:'_thumbnail',
+            bFrag		:'_middle'
+        },
+        't.people.com.cn':{
+            feedSelector:'.miniImg',
+            sFrag:'/s_',
+            bFrag:'/b_'
+        },
+        't.ifeng.com':{
+            feedSelector:'.zoom_in_image img',
+            sFrag		:'/128x160_',
+            bFrag		:'/520x0_'
+        },
+        'my.tianya.cn':{
+            feedSelector:'.pic-zoomin',
+            bigSrc		:'_middlepic',
+            sFrag		:'small',
+            bFrag		:'middle'
+        },
+        'diandian.com':{
+            feedSelector:'.feed-img',
+            bigSrc		:'imgsrc'
+        },
+        'digu.com':{
+            feedSelector:'.picture',
+            sFrag		:'_100x75',
+            bFrag		:'_640x480'
+        },
+        'qzone.qq.com':{
+            feedSelector:'.img_box a',
+            sFrag		:'/160',
+            bFrag		:'/460'	
+        }
+    };
+ 
+    // 居中显示的图片对象
+    var PopImg = {
+        
+        show: function(imgNode) {
+            clearTimeout(this._hideTimer);
 
-		var $C = function(tag) {
-			return document.createElement(tag);
-		};
+            var that = this;
+            var src = this._getBigImgsrc(imgNode);
+            if(!this.img) {
+                this.img = this._createImg(src);
+            }
+            else {
+                this.img.src = src;
+            }
 
-		var $CN = function(className) {
-			return document.getElementsByClassName(className);
-		};
+            imgReady(src, function() {
+                var pos = offset(imgNode);
+                //for firefox & chrome 's diff
+                var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                var tempTop = (window.innerHeight - this.height) > 0 ? (window.innerHeight - this.height) : 0;
+                that.img.style.top = (scrollTop + tempTop/2) + 15 + 'px';
+                that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+50 : 200) + 'px';
+                that.img.style.opacity = 1;
+                that.img.style.visibility = 'visible';
+                that.img.style.marginTop = '-15px';
+            });
+        },
 
-		var $Q = function(selector, node) {
-			var nodes = [];
-			selector = selector.split(',');
-			for(var i=0; i<selector.length; i++) {
-				nodes = nodes.concat(Array.prototype.slice.call((node || document).querySelectorAll(selector)));
-			}
-			return nodes;
-		};
+        hide: function() {
+            var that = this;
+            this.img.style.opacity = 0;
+            this.img.style.marginTop = '0px';
+            this._hideTimer = setTimeout(function() {
+                that.img.src = '';
+                that.img.style.visibility = 'hidden';                
+            }, 300);
+        },
 
-		var getPos = function(source) {
-			var pt = {x:0,y:0,width:source.offsetWidth,height:source.offsetHeight};
-			do {
-				pt.x += source.offsetLeft;
-				pt.y += source.offsetTop;
-				source = source.offsetParent;
-			} while (source);
-			return pt;
-		};
+        _createImg: function(src) {
+			var node = document.createElement('img');
+			node.id = 'miniblogImgPop';
+			node.src = src;
+			document.body.appendChild(node);
+			return node;
+        },
 
-		var getImgSize = function(imgsrc) {
-			var cInfo = cache.imgInfo;
-			if(cInfo[imgsrc] && cInfo[imgsrc].height) {
-				//console.info(imgsrc+' : cache aimed 1');
-				return function() {
-					//console.info('cache aimed 2');
-					return {
-						width: cInfo[imgsrc].width,
-						height: cInfo[imgsrc].height
-					};
-				};
-			}
-			else {
-				var size, w, h;
-				cache.imgObj = new Image();
-				cache.imgObj.src = imgsrc;
-				return function() {
-					w = parseInt(cache.imgObj.width);
-					h = parseInt(cache.imgObj.height);
-					//console.log(w, h);
-					return { width:w, height:h };
-				};
-			}
-		};
+        _getBigImgsrc: function(obj) {
+            var tempimgs, tempimg, imgsrc, i, l,
+                sname = MiniblogImgPop.sitename,
+                config = MiniblogImgPop.config;
+            if(obj.tagName === 'IMG' || obj.tagName === 'img') {
+                tempimg = obj;
+            }
+            else{
+                tempimgs = obj.getElementsByTagName('IMG');
+                if(tempimgs == null || tempimgs.length == 0) {
+                    throw 'cant found the img node.';
+                }
+                else{
+                    tempimg = tempimgs[0];
+                }
+            }
 
-		var saveImgInfo = function(o) {
-			//保存上一次图片的信息，用以缓存
-			if(!cache.imgInfo[o.src] && parseInt(o.width) !== 10 && parseInt(o.height) !== 30) {
-				cache.imgInfo[o.src] = {width:parseInt(o.width), height:parseInt(o.height)};
-				//console.info(o.src+' : cache added.');
-			}
-		};
+            //针对使用额外属性保存大图地址的网站
+            if(config['bigSrc']) {
+                return tempimg.getAttribute(config['bigSrc']);
+            }
 
-		var getSiteName = function() {
-			if(cache.siteName) return cache.siteName;
-			var i, each;
-			for(each in miniblogsConfig) {
-				if(cache.loc.indexOf(each) != -1) {
-					cache.siteName = each;
-					return each;
-				}
-			}
-			return '';
-		};
+            //一般处理
+            imgsrc = tempimg.getAttribute('src');
+            //console.info(imgsrc);
+            imgsrc = decodeURIComponent(imgsrc);
+            if(typeof config['sFrag'] === 'object') {
+                for(i=0, l=config['sFrag'].length; i<l; i++) {
+                    imgsrc = imgsrc.replace(config['sFrag'][i],config['bFrag'][i]);
+                }
+            }
+            else{
+                imgsrc = imgsrc.replace(config['sFrag'],config['bFrag']);
+            }
+            return imgsrc;
+        }
 
-		var getBigImgsrc = function(obj) {
-			var tempimgs,
-				tempimg,
-				imgsrc,
-				i,
-				l,
-				sname = getSiteName(),
-				config = (sname && miniblogsConfig[sname]);
-			if(obj.tagName === 'IMG' || obj.tagName === 'img') {
-				tempimg = obj;
-			}
-			else{
-				tempimgs = obj.getElementsByTagName('IMG');
-				if(tempimgs == null || tempimgs.length == 0) {
-					throw 'cant found the img node.';
-				}
-				else{
-					tempimg = tempimgs[0];
-				}
-			}
+    };
 
-			//针对使用额外属性保存大图地址的网站
-			if(config['bigSrc']) {
-				return tempimg.getAttribute(config['bigSrc']);
-			}
+    var MiniblogImgPop = {
+        
+        prepare: function() {
+            this.sitename = this._getSiteName();
+            this.config = MIPConfig[this.sitename];
+        },
 
-			//一般处理
-			imgsrc = tempimg.getAttribute('src');
-			//console.info(imgsrc);
-			imgsrc = decodeURIComponent(imgsrc);
-			if(typeof config['sFrag'] === 'object') {
-				for(i=0, l=config['sFrag'].length; i<l; i++) {
-					imgsrc = imgsrc.replace(config['sFrag'][i],config['bFrag'][i]);
-				}
-			}
-			else{
-				imgsrc = imgsrc.replace(config['sFrag'],config['bFrag']);
-			}
-			return imgsrc;
-		};
+        addImgsEventListener: function() {
+            var that = this;
+            delegate(document.body, 'mouseover', function(e, node) {
+                if (!that.zPressing) {                
+                    PopImg.show(node);
+                }
+            }, this.config['feedSelector']);
+            delegate(document.body, 'mouseout', function() {
+                if (!that.zPressing) {
+                    PopImg.hide();
+                }
+            }, this.config['feedSelector']);
+        },
 
-		var _fade = function(spec,callback) {
-			var obj = spec.obj,
-				fromOpacity,
-				toOpacity;
-			spec.from = spec.from || obj.style.opacity * 100;
-			fromOpacity = spec.from/100;
-			toOpacity = spec.to/100;
+        addZListener: function() {
+            var that = this;
+            window.addEventListener('keydown', function(e) {
+                if(e.keyCode === 90) {
+                    that.zPressing = true;
+                    // 出现遮罩层
+                    if (!that.mask) {
+                        that.mask = document.createElement('div');
+                        that.mask.id = 'miniblogImgPop-mask';
+                        document.body.appendChild(that.mask);
+                    }
+                    that.mask.style.opacity = 1;
+                    that.mask.style.visibility = 'visible';
+                    // 记录按下Z键时的滚动条位置
+                    if (!that.zScrollTop) {
+                        that.zScrollTop =  document.documentElement.scrollTop || document.body.scrollTop;
+                    }
+                }
+            }, false);
+            window.addEventListener('keyup', function(e) {
+                if(e.keyCode === 90) {
+                    that.zPressing = false;
+                    // 放开Z键时，复原滚动条位置
+                    console.log(that.zScrollTop);
+                    document.documentElement.scrollTop = that.zScrollTop;
+                    document.body.scrollTop = that.zScrollTop;
+                    that.zScrollTop = null;
+                    // 隐藏遮罩层
+                    that.mask.style.opacity = 0;
+                    setTimeout(function() {
+                        that.mask.style.visibility = 'hidden';
+                    }, 300);
+                }
+            }, false);
+        },
 
-			obj.style.visibility = '';
-			//渐变
-			cache.timer && clearInterval(cache.timer);
-			cache.timer = setInterval(function() {
-				//console.info(obj.style.opacity + ' ' + toOpacity);
-				if(obj.style.opacity < toOpacity) {
-					obj.style.opacity = parseFloat(obj.style.opacity) + 0.2;
-				}
-				else if(obj.style.opacity > toOpacity) {
-					//修复一个chrome下图片不消失的bug
-					var temp = parseFloat(obj.style.opacity) - 0.2;
-					temp = (temp <= 0.01) ? 0 : temp;
-					obj.style.opacity = temp;
-				}
-				else if(obj.style.opacity == toOpacity) {
-					callback && callback.call(this);
-					clearInterval(cache.timer);
-				}
-				else
-					throw 'fadeTo函数异常';
-			},25);
-		};
+        // 获得当前站点名
+        _getSiteName: function() {
+            var i, each;
+            for(each in MIPConfig) {
+                if(location.href.indexOf(each) != -1) {
+                    return each;
+                }
+            }
+            return '';
+        },
 
-		var createImgPop = function(imgsrc) {
-			$('miniblogImgPop') && document.body.removeChild($('miniblogImgPop'));
-			var temp = $C('img');
-			temp.id = 'miniblogImgPop';
-			temp.style.visibility = 'hidden';
-			temp.src = imgsrc;
-			document.body.appendChild(temp);
-			return temp;
-		};
+        init: function() {
+        	//准备必要的数据
+			this.prepare();
+			//绑定imgs hover事件
+			this.addImgsEventListener();
+			//绑定按键z事件，使图片不会消失，方便看大图
+			this.addZListener();
+        }
 
-		var appendPod = function(imgsrc, pos, imgSizeFunc) {
-			//防止图片未载入时获取图片大小为0的情况
-			//alert(imgSizeFunc().height);
-			var imgHeight = imgSizeFunc().height,
-				that,
-				imgPop,
-				scrollTop;
-			//console.info(imgsrc, imgHeight);
-			//imgHeight小于50px，很主观地判断其图片尚未载入
-			if(!imgHeight || imgHeight <= 50) {
-				that = this;
-				cache.timerHeight = setTimeout(function() {
-					appendPod.call(that, imgsrc, pos, imgSizeFunc);
-				}, 40);
-				return;
-			}
+    };
 
-			imgPop = $('miniblogImgPop');
-			if(!imgPop) {
-				imgPop = createImgPop(imgsrc);
-			}
-			else {
-				imgPop.src = imgsrc;
-			}
-			//for firefox & chrome 's diff
-			scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-			var tempTop = (window.innerHeight - imgHeight) > 0 ? (window.innerHeight - imgHeight) : 0;
-			imgPop.style.top = (scrollTop + tempTop/2) + 'px';
-			imgPop.style.left = pos.x + pos.width + 80 + 'px';
-			imgPop.style.opacity = 0;
-			imgPop.style.visibility = '';
-			
-			_fade({obj:imgPop, to:100});
-			div_bigImg = null;
-			bigImg = null;
+    // 启动
+    MiniblogImgPop.init();
 
-			//保存上一次图片的信息，用以缓存
-			saveImgInfo(cache.imgObj);
-		};
 
-		var removePop = function() {
-			return function(e) {
-				if(cache.zPressing === false) {
-					e.stopPropagation();
-					cache.timer && clearInterval(cache.timer);
-					var theObj = $('miniblogImgPop');
+    // Helpers
+    // ---
 
-					if(theObj) {
-						_fade({obj:theObj, to:0}, function() {
-							cache.imgObj.src = '';
-							theObj.src = '',
-							theObj.style.visibility = 'hidden';
-						});
-					}
-				}
-			};
-		};
+	function $(selector) {
+        return document.querySelectorAll(selector);	
+    }
 
-		var imgHover = function(img) {
-			var imgsrc = getBigImgsrc(img), getSize;
-			return function(e) {
-				if(!/http.*/.test(imgsrc)) {
-					imgsrc = getBigImgsrc(img);
-				}
-				//console.info('shift pressing : ' + cache.shiftPressing);
-				if(cache.zPressing === false) {
-					//console.time('test2');
-					e.stopPropagation();
-					cache.timerHeight && clearInterval(cache.timerHeight);
-					cache.timer && clearInterval(cache.timer);
-					getSize = getImgSize(imgsrc);
-					appendPod(imgsrc, getPos(img), getSize);
-					//console.timeEnd('test2');
-				}
-			};
-		};
+    function offset(source) {
+        var pt = {x:0,y:0,width:source.offsetWidth,height:source.offsetHeight};
+        do {
+            pt.x += source.offsetLeft;
+            pt.y += source.offsetTop;
+            source = source.offsetParent;
+        } while (source);
+        return pt;
+    }
 
-		var imgOut = function() {
-			return removePop();
-		};
+    function delegate(el, eventType, handler, selector) {
+        el = el || document;
+        el.addEventListener(eventType, function(e) {
+            var node = getHandlerNode(e, selector, el);	
+            node && handler.call(el, e, node);
+        }, false);
 
-		var delegate = function(el, eventType, handler, selector) {
-			el = el || document;
-			el.addEventListener(eventType, function(e) {
-				var node = getHandlerNode(e, selector, el);	
-				node && handler.call(el, e, node);
-			}, false); 
-		};
-
-		var getHandlerNode = function(e, selector, el) {
+		function getHandlerNode(e, selector, el) {
 			//返回我们handler需要的参数
 			var nodes;
 			el = el || document;
 			if (e && e.target && selector) {
-				var temp = null;
-				if(cache.height) {
-					temp = cache.height - document.documentElement.scrollHeight;
-				}
-				if(cache.nodes && cache.height && Math.abs(temp) < 40 && cache.nodes.length != 0 && cache.location == window.location.href) {
-					//console.log('cache aimed!');
-					nodes = cache.nodes;
-				}
-				else {
-					nodes = cache.nodes = $Q(selector, el);
-					cache.height = document.documentElement.scrollHeight;
-					cache.location = window.location.href;
-				}
-				//console.log(nodes.length);
+                nodes = el.querySelectorAll(selector);
 				for(i=0; i<nodes.length; i++) {
 					if(e.target == nodes[i] || isInDomChain(e.target, nodes[i], el)) {
 						return nodes[i];
@@ -425,9 +346,9 @@
 				}
 				return false;
 			}
-		};
+		}
 
-		var isInDomChain = function(target, parent, ancestor, maxDepth) {
+		function isInDomChain(target, parent, ancestor, maxDepth) {
 			var ancestor = ancestor || null,
 				maxDepth = maxDepth || 100;
 			if (target == ancestor) {
@@ -444,54 +365,130 @@
 				}
 			}
 			return false;
-		};
+		}
+    }
 
-		return {
-			prepare : function() {
-				this.sitename = getSiteName();
-				this.config = (this.sitename && miniblogsConfig[this.sitename]);
-			},
-			addImgsEventListener : function() {
-				delegate(document.body, 'mouseover', function(e, node) {
-					imgHover(node).call(null, e);
-				}, this.config['feedSelector']);
+    /**
+     * 图片头数据加载就绪事件 - 更快获取图片尺寸
+     * @version	2011.05.27
+     * @author	TangBin
+     * @see		http://www.planeart.cn/?p=1121
+     * @param	{String}	图片路径
+     * @param	{Function}	尺寸就绪
+     * @param	{Function}	加载完毕 (可选)
+     * @param	{Function}	加载错误 (可选)
+     * @example imgReady('http://www.google.com.hk/intl/zh-CN/images/logo_cn.png', function () {
+            alert('size ready: width=' + this.width + '; height=' + this.height);
+        });
+     */
+    var imgReady = (function () {
+        var list = [], intervalId = null,
 
-				delegate(document.body, 'mouseout', imgOut(), this.config['feedSelector']);
-			},
-			addShiftListener : function() {
-				window.addEventListener('keydown',function(e) {
-					if(e.keyCode === 90) {
-						cache.zPressing = true;
-					}
-				},false);
-				window.addEventListener('keyup',function(e) {
-					if(e.keyCode === 90) {
-						cache.zPressing = false;
-						removePop()(e);
-					}
-				},false);
-			},
-			init: function() {
-				//准备必要的数据
-				this.prepare();
-				//绑定imgs hover事件
-				this.addImgsEventListener();
-				//绑定按键z事件，使图片不会消失，方便看大图
-				this.addShiftListener();
-			}
-		};
-	})();
+        // 用来执行队列
+        tick = function () {
+            var i = 0;
+            for (; i < list.length; i++) {
+                list[i].end ? list.splice(i--, 1) : list[i]();
+            };
+            !list.length && stop();
+        },
 
-	imgPop.init();
+        // 停止所有定时器队列
+        stop = function () {
+            clearInterval(intervalId);
+            intervalId = null;
+        };
 
-	//增加自定义样式
+        return function (url, ready, load, error) {
+            var onready, width, height, newWidth, newHeight,
+                img = new Image();
+            
+            img.src = url;
+
+            // 如果图片被缓存，则直接返回缓存数据
+            if (img.complete) {
+                ready.call(img);
+                load && load.call(img);
+                return;
+            };
+            
+            width = img.width;
+            height = img.height;
+            
+            // 加载错误后的事件
+            img.onerror = function () {
+                error && error.call(img);
+                onready.end = true;
+                img = img.onload = img.onerror = null;
+            };
+            
+            // 图片尺寸就绪
+            onready = function () {
+                newWidth = img.width;
+                newHeight = img.height;
+                if (newWidth !== width || newHeight !== height ||
+                    // 如果图片已经在其他地方加载可使用面积检测
+                    newWidth * newHeight > 1024
+                ) {
+                    ready.call(img);
+                    onready.end = true;
+                };
+            };
+            onready();
+            
+            // 完全加载完毕的事件
+            img.onload = function () {
+                // onload在定时器时间差范围内可能比onready快
+                // 这里进行检查并保证onready优先执行
+                !onready.end && onready();
+            
+                load && load.call(img);
+                
+                // IE gif动画会循环执行onload，置空onload即可
+                img = img.onload = img.onerror = null;
+            };
+
+            // 加入队列中定期执行
+            if (!onready.end) {
+                list.push(onready);
+                // 无论何时只允许出现一个定时器，减少浏览器性能损耗
+                if (intervalId === null) intervalId = setInterval(tick, 40);
+            };
+        };
+    })();
+
+    //增加自定义样式
 	GM_addStyle("\
 		#miniblogImgPop {\
-			box-shadow: 0 3px 15px rgba(34, 25, 25, 1);\
+			box-shadow: 0 0 15px #222;\
 			border: 7px solid rgba(255, 255, 255, 0.7);\
-			z-index: 9999;\
+            border-radius: 2px;\
+			z-index: 10001;\
+            opacity: 0;\
+            margin-top: 0;\
 			position: absolute;\
+            visibility: hidden;\
+            transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            -webkit-transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
+		}\
+	");
+
+        //增加自定义样式
+	GM_addStyle("\
+		#miniblogImgPop-mask {\
+			background: #000;\
+			z-index: 10000;\
+            opacity: 0;\
+            top: 0;\
+            left: 0;\
+            height: 100%;\
+            width: 100%;\
+            visibility: hidden;\
+			position: fixed;\
+            transition: opacity 0.3s ease-out 0s;\
+            -webkit-transition: opacity 0.3s ease-out 0s;\
 		}\
 	");
 
 })();
+
