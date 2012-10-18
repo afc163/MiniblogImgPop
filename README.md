@@ -6,9 +6,9 @@
 
 按住Z键可看超屏大图。
 
----
-
 ![示例图片](http://s3.amazonaws.com/uso_ss/11532/large.jpg?1286877237)
+
+---
 
 * 油猴脚本安装地址：http://userscripts.org/scripts/show/83994
 
