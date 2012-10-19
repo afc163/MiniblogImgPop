@@ -72,7 +72,7 @@
 //							2.优化Z键看大图的使用体验，现在按Z键会出现遮罩层，滚动看大图，放掉Z键后复原
 //							3.优化图片的显示效果
 //							4.修复t.163.com失效的问题
-
+// @modified	2012.10.19	1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
 
 (function() {
 
@@ -100,8 +100,8 @@
         },
         't.163.com':{
             feedSelector:'.tweet-preview-pic',
-            sFrag		:'w=140&h=140',
-            bFrag		:'w=440'
+            sFrag		:['w=140&h=140', '&gif=1'],
+            bFrag		:['w=440', '&gif=0']
         },
         't.qq.com':{
             feedSelector:'.pic img',
@@ -123,7 +123,7 @@
             sFrag		:'/128x160_',
             bFrag		:'/520x0_'
         },
-        'my.tianya.cn':{
+        'www.tianya.cn':{
             feedSelector:'.pic-zoomin',
             bigSrc		:'_middlepic',
             sFrag		:'small',
@@ -158,7 +158,7 @@
 
             imgReady(src, function() {
                 var pos = offset(smallImg);
-                that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+50 : 200) + 'px';
+                that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+30 : 200) + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
