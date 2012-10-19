@@ -100,8 +100,8 @@
         },
         't.163.com':{
             feedSelector:'.tweet-preview-pic',
-            sFrag		:'w=140&h=140',
-            bFrag		:'w=440'
+            sFrag		:['w=140&h=140', '&gif=1'],
+            bFrag		:['w=440', '&gif=0']
         },
         't.qq.com':{
             feedSelector:'.pic img',
@@ -123,7 +123,7 @@
             sFrag		:'/128x160_',
             bFrag		:'/520x0_'
         },
-        'my.tianya.cn':{
+        'www.tianya.cn':{
             feedSelector:'.pic-zoomin',
             bigSrc		:'_middlepic',
             sFrag		:'small',
@@ -158,7 +158,7 @@
 
             imgReady(src, function() {
                 var pos = offset(smallImg);
-                that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+50 : 200) + 'px';
+                that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+30 : 200) + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
