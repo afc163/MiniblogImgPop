@@ -2,7 +2,7 @@
 // @name			Miniblog Img Pop
 // @namespace		http://userscripts.org/users/83994
 // @description		微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version			2.2
+// @version			3.0
 // @include			http://*qing.weibo.com/*
 // @include			http://*weibo.com/*
 // @include			http://*t.163.com/*
@@ -148,28 +148,31 @@
     // 居中显示的图片对象
     var PopImg = {
         
-        show: function(imgNode) {
+        show: function(e) {
+            this.allowMove = false;
             clearTimeout(this._hideTimer);
-
             var that = this;
-            var src = this._getBigImgsrc(imgNode);
-            if(!this.img) {
-                this.img = this._createImg(src);
-            }
-            else {
-                this.img.src = src;
-            }
+            var smallImg = MiniblogImgPop.smallImg;
+            var src = this._getBigImgsrc(smallImg);
+            this.img.src = src;
 
             imgReady(src, function() {
-                var pos = offset(imgNode);
-                //for firefox & chrome 's diff
-                var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-                var tempTop = (window.innerHeight - this.height) > 0 ? (window.innerHeight - this.height) : 0;
-                that.img.style.top = (scrollTop + tempTop/2) + 15 + 'px';
+                var pos = offset(smallImg);
                 that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+50 : 200) + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
+                PopBar.show(e);
+
+                if (window.innerHeight > this.height) {
+                    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    that.img.style.top = (scrollTop + (window.innerHeight - this.height)/2) + 15 + 'px';
+                    that.allowMove = false;
+                }
+                else {
+                    that.allowMove = true;                    
+                    that.move(e);
+                }
             });
         },
 
@@ -181,14 +184,28 @@
                 that.img.src = '';
                 that.img.style.visibility = 'hidden';                
             }, 300);
+
+            PopBar.hide();
+            this.shown = false;
         },
 
-        _createImg: function(src) {
+        init: function() {
 			var node = document.createElement('img');
 			node.id = 'miniblogImgPop';
-			node.src = src;
 			document.body.appendChild(node);
-			return node;
+            this.img = node;
+
+            PopBar.init();
+        },
+
+        move: function(e) {
+            if (!this.allowMove) {
+                return;
+            }
+            PopBar.move(e);
+            // 根据PopBar的位置算出大图的位置
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 15 + 'px';
         },
 
         _getBigImgsrc: function(obj) {
@@ -230,6 +247,64 @@
 
     };
 
+    // 指示当前可视区域的Bar
+    var PopBar = {
+        show: function(e) {
+            var smallImg = MiniblogImgPop.smallImg,
+                bigImg = PopImg.img;
+
+            this.sOffset = offset(smallImg);
+            
+            // 表示放大的倍数
+            this.scale = (bigImg.height + 14) * 1.0 / this.sOffset.height;
+
+            // 计算出bar的高度
+            if (window.innerHeight < bigImg.height) {
+                this.bar.style.height = parseInt(window.innerHeight / this.scale) + 'px';
+            }
+            else {
+                this.bar.style.height = this.sOffset.height + 'px';            
+            }
+
+            // 计算bar的Top值可以允许的范围
+            this.range = this.sOffset.height - this.bar.offsetHeight;            
+
+            // 计算bar的位置
+            this.bar.style.left = this.sOffset.x + this.sOffset.width + 'px';
+            this.move(e);
+
+            // 显示bar
+            this.bar.style.opacity = 1;
+        },
+
+        // 主要是计算bar的top位置
+        move: function(e) {
+            // 计算鼠标相对于元素的位置
+            var x = e.pageX - this.sOffset.x,
+                y = e.pageY - this.sOffset.y;
+
+            // 计算bar的top值
+            var top = y - this.bar.offsetHeight/2;
+            top = top < 0 ? 0 : top;
+            top = top > this.range ? this.range : top;
+            this.top = top;
+
+            this.bar.style.top = top + this.sOffset.y + 'px';
+        },
+
+        hide: function() {
+            this.bar.style.opacity = 0;
+            this.bar.style.height = '0px';
+        },
+
+        init: function() {
+        	var node = document.createElement('div');
+			node.id = 'miniblogImgPop-bar';
+			document.body.appendChild(node);
+            this.bar = node;
+        }
+    };
+
     var MiniblogImgPop = {
         
         prepare: function() {
@@ -240,13 +315,19 @@
         addImgsEventListener: function() {
             var that = this;
             delegate(document.body, 'mouseover', function(e, node) {
-                if (!that.zPressing) {                
-                    PopImg.show(node);
+                if (!that.zPressing) {
+                    that.smallImg = node;
+                    PopImg.show(e);
                 }
             }, this.config['feedSelector']);
             delegate(document.body, 'mouseout', function() {
                 if (!that.zPressing) {
                     PopImg.hide();
+                }
+            }, this.config['feedSelector']);
+            delegate(document.body, 'mousemove', function(e) {
+                if (!that.zPressing) {
+                    PopImg.move(e);
                 }
             }, this.config['feedSelector']);
         },
@@ -256,33 +337,12 @@
             window.addEventListener('keydown', function(e) {
                 if(e.keyCode === 90) {
                     that.zPressing = true;
-                    // 出现遮罩层
-                    if (!that.mask) {
-                        that.mask = document.createElement('div');
-                        that.mask.id = 'miniblogImgPop-mask';
-                        document.body.appendChild(that.mask);
-                    }
-                    that.mask.style.opacity = 1;
-                    that.mask.style.visibility = 'visible';
-                    // 记录按下Z键时的滚动条位置
-                    if (!that.zScrollTop) {
-                        that.zScrollTop =  document.documentElement.scrollTop || document.body.scrollTop;
-                    }
                 }
             }, false);
             window.addEventListener('keyup', function(e) {
                 if(e.keyCode === 90) {
                     that.zPressing = false;
-                    // 放开Z键时，复原滚动条位置
-                    console.log(that.zScrollTop);
-                    document.documentElement.scrollTop = that.zScrollTop;
-                    document.body.scrollTop = that.zScrollTop;
-                    that.zScrollTop = null;
-                    // 隐藏遮罩层
-                    that.mask.style.opacity = 0;
-                    setTimeout(function() {
-                        that.mask.style.visibility = 'hidden';
-                    }, 300);
+                    PopImg.hide();
                 }
             }, false);
         },
@@ -299,11 +359,13 @@
         },
 
         init: function() {
-        	//准备必要的数据
+            // 初始化两个节点
+            PopImg.init();
+        	// 准备必要的数据
 			this.prepare();
-			//绑定imgs hover事件
+			// 绑定imgs hover事件
 			this.addImgsEventListener();
-			//绑定按键z事件，使图片不会消失，方便看大图
+			// 绑定按键z事件，使图片不会消失，方便看大图
 			this.addZListener();
         }
 
@@ -461,7 +523,7 @@
         };
     })();
 
-    //增加自定义样式
+    // 增加自定义样式
 	GM_addStyle("\
 		#miniblogImgPop {\
 			box-shadow: 0 0 15px #222;\
@@ -477,20 +539,17 @@
 		}\
 	");
 
-        //增加自定义样式
+    // 增加自定义样式
 	GM_addStyle("\
-		#miniblogImgPop-mask {\
-			background: #000;\
-			z-index: 10000;\
+		#miniblogImgPop-bar {\
+			border-right: 5px solid #e80;\
+            border-radius: 7px;\
+            width:0;\
+			z-index: 999;\
             opacity: 0;\
-            top: 0;\
-            left: 0;\
-            height: 100%;\
-            width: 100%;\
-            visibility: hidden;\
-			position: fixed;\
-            transition: opacity 0.3s ease-out 0s;\
-            -webkit-transition: opacity 0.3s ease-out 0s;\
+			position: absolute;\
+            transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            -webkit-transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
 		}\
 	");
 
