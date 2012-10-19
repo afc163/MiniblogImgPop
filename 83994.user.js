@@ -161,12 +161,12 @@
                 that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+30 : 200) + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
-                that.img.style.marginTop = '-15px';
+                that.img.style.marginTop = '-10px';
                 PopBar.show(e);
 
                 if (window.innerHeight > this.height) {
                     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-                    that.img.style.top = (scrollTop + (window.innerHeight - this.height)/2) + 15 + 'px';
+                    that.img.style.top = (scrollTop + (window.innerHeight - this.height)/2) + 10 + 'px';
                     that.allowMove = false;
                 }
                 else {
@@ -183,7 +183,7 @@
             this._hideTimer = setTimeout(function() {
                 that.img.src = '';
                 that.img.style.visibility = 'hidden';                
-            }, 300);
+            }, 200);
 
             PopBar.hide();
             this.shown = false;
@@ -205,7 +205,7 @@
             PopBar.move(e);
             // 根据PopBar的位置算出大图的位置
             var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 15 + 'px';
+            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 10 + 'px';
         },
 
         _getBigImgsrc: function(obj) {
@@ -534,8 +534,8 @@
             margin-top: 0;\
 			position: absolute;\
             visibility: hidden;\
-            transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
-            -webkit-transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            -webkit-transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
 		}\
 	");
 
@@ -548,10 +548,11 @@
 			z-index: 999;\
             opacity: 0;\
 			position: absolute;\
-            transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
-            -webkit-transition: opacity 0.3s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            -webkit-transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
 		}\
 	");
 
 })();
+
 
