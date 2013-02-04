@@ -161,7 +161,7 @@
                 that.img.style.left = pos.x + (pos.width >= 200 ? pos.width+30 : 200) + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
-                that.img.style.marginTop = '-10px';
+                that.img.style.marginTop = '-15px';
                 PopBar.show(e);
 
                 if (window.innerHeight > this.height) {
@@ -217,7 +217,7 @@
             }
             else{
                 tempimgs = obj.getElementsByTagName('IMG');
-                if(tempimgs == null || tempimgs.length == 0) {
+                if(!tempimgs || tempimgs.length === 0) {
                     throw 'cant found the img node.';
                 }
                 else{
@@ -226,21 +226,21 @@
             }
 
             //针对使用额外属性保存大图地址的网站
-            if(config['bigSrc']) {
-                return tempimg.getAttribute(config['bigSrc']);
+            if(config.bigSrc) {
+                return tempimg.getAttribute(config.bigSrc);
             }
 
             //一般处理
             imgsrc = tempimg.getAttribute('src');
             //console.info(imgsrc);
             imgsrc = decodeURIComponent(imgsrc);
-            if(typeof config['sFrag'] === 'object') {
-                for(i=0, l=config['sFrag'].length; i<l; i++) {
-                    imgsrc = imgsrc.replace(config['sFrag'][i],config['bFrag'][i]);
+            if(typeof config.sFrag === 'object') {
+                for(i=0, l=config.sFrag.length; i<l; i++) {
+                    imgsrc = imgsrc.replace(config.sFrag[i], config.bFrag[i]);
                 }
             }
             else{
-                imgsrc = imgsrc.replace(config['sFrag'],config['bFrag']);
+                imgsrc = imgsrc.replace(config.sFrag, config.bFrag);
             }
             return imgsrc;
         }
@@ -260,7 +260,7 @@
 
             // 计算出bar的高度
             if (window.innerHeight < bigImg.height) {
-                this.bar.style.height = parseInt(window.innerHeight / this.scale) + 'px';
+                this.bar.style.height = parseInt(window.innerHeight/this.scale, 10) + 'px';
             }
             else {
                 this.bar.style.height = this.sOffset.height + 'px';            
@@ -319,17 +319,17 @@
                     that.smallImg = node;
                     PopImg.show(e);
                 }
-            }, this.config['feedSelector']);
+            }, this.config.feedSelector);
             delegate(document.body, 'mouseout', function() {
                 if (!that.zPressing) {
                     PopImg.hide();
                 }
-            }, this.config['feedSelector']);
+            }, this.config.feedSelector);
             delegate(document.body, 'mousemove', function(e) {
                 if (!that.zPressing) {
                     PopImg.move(e);
                 }
-            }, this.config['feedSelector']);
+            }, this.config.feedSelector);
         },
 
         addZListener: function() {
@@ -415,8 +415,9 @@
         }
 
         function isInDomChain(target, parent, ancestor, maxDepth) {
-            var ancestor = ancestor || null,
-                maxDepth = maxDepth || 100;
+            ancestor = ancestor || null;
+            maxDepth = maxDepth || 100;
+
             if (target == ancestor) {
                 return false;
             }
@@ -424,7 +425,7 @@
                 return true;
             }
             var i = 0;//防止过多嵌套
-            while (target != ancestor && target != null && (i++ < maxDepth)) {
+            while (target != ancestor && target !== null && (i++ < maxDepth)) {
                 target = target.parentNode;
                 if (target == parent) {
                     return true;
@@ -455,7 +456,7 @@
             var i = 0;
             for (; i < list.length; i++) {
                 list[i].end ? list.splice(i--, 1) : list[i]();
-            };
+            }
             !list.length && stop();
         },
 
@@ -476,7 +477,7 @@
                 ready.call(img);
                 load && load.call(img);
                 return;
-            };
+            }
 
             width = img.width;
             height = img.height;
@@ -498,7 +499,7 @@
                 ) {
                     ready.call(img);
                     onready.end = true;
-                };
+                }
             };
             onready();
 
@@ -519,7 +520,7 @@
                 list.push(onready);
                 // 无论何时只允许出现一个定时器，减少浏览器性能损耗
                 if (intervalId === null) intervalId = setInterval(tick, 40);
-            };
+            }
         };
     })();
 
@@ -554,5 +555,3 @@
     ");
 
 })();
-
-
