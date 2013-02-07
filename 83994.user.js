@@ -73,6 +73,7 @@
 //                          3.优化图片的显示效果
 //                          4.修复t.163.com失效的问题
 // @modified    2012.10.19  1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
+// @modified    2013.02.06  代码优化，修复人民微博失效的问题。 
 
 (function() {
 
@@ -114,7 +115,7 @@
             bFrag       :'_middle'
         },
         't.people.com.cn':{
-            feedSelector:'.miniImg',
+            feedSelector:'.list_s_pic img',
             sFrag:'/s_',
             bFrag:'/b_'
         },
@@ -555,3 +556,4 @@
     ");
 
 })();
+
