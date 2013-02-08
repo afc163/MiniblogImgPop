@@ -10,5 +10,5 @@
 
 * 油猴脚本安装地址：http://userscripts.org/scripts/show/83994
 
-* firefox扩展安装地址：https://addons.mozilla.org/zh-CN/firefox/addon/miniblogimgpop/versions/3.0/
+* firefox扩展安装地址：https://addons.mozilla.org/zh-CN/firefox/addon/ipop/
 
