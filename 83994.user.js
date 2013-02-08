@@ -15,12 +15,13 @@
 // @include         http://*diandian.com/*
 // @include         http://*.digu.com/*
 // @include         http://*qzone.qq.com/*
+// @include         http://*t.cntv.cn*
 //
 // ==/UserScript==
 
 // @author      afc163
 // @weibo       http://weibo.com/afc163
-// @code        https://github.com/afc163/miniblogImgPop
+// @code        https://github.com/afc163/iPop
 // @blog        http://pianyou.me
 // @date        2010.8.12
 // @modified    2010.9.14
@@ -73,7 +74,7 @@
 //                          3.优化图片的显示效果
 //                          4.修复t.163.com失效的问题
 // @modified    2012.10.19  1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
-// @modified    2013.02.06  代码优化，修复人民微博失效的问题。 
+// @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
 
 (function() {
 
@@ -143,6 +144,11 @@
             feedSelector:'.img_box a',
             sFrag       :'/160',
             bFrag       :'/460' 
+        },
+        't.cntv.cn':{
+            feedSelector:'.zoom-move',
+            sFrag       :'/thumbnail',
+            bFrag       :'/bmiddle' 
         }
     };
 
@@ -531,7 +537,7 @@
             box-shadow: 0 0 15px #222;\
             border: 7px solid rgba(255, 255, 255, 0.7);\
             border-radius: 2px;\
-            z-index: 10001;\
+            z-index: 12345;\
             opacity: 0;\
             margin-top: 0;\
             position: absolute;\
@@ -556,4 +562,3 @@
     ");
 
 })();
-
