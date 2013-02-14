@@ -15,8 +15,8 @@
 // @include         http://*diandian.com/*
 // @include         http://*.digu.com/*
 // @include         http://*qzone.qq.com/*
-// @include         http://*t.cntv.cn*
 // @include         http://i.taobao.com/*
+// @include         http://*t.cntv.cn*
 //
 // ==/UserScript==
 
@@ -152,7 +152,7 @@
             bFrag       :'/bmiddle' 
         },
         'i.taobao.com':{
-            feedSelector:'.image-link',
+            feedSelector:'.thumb-image',
             sFrag       :'_160x160',
             bFrag       :'_450x10000'
         }
