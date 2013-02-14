@@ -16,6 +16,7 @@
 // @include         http://*.digu.com/*
 // @include         http://*qzone.qq.com/*
 // @include         http://*t.cntv.cn*
+// @include         http://i.taobao.com/*
 //
 // ==/UserScript==
 
@@ -149,6 +150,11 @@
             feedSelector:'.zoom-move',
             sFrag       :'/thumbnail',
             bFrag       :'/bmiddle' 
+        },
+        'i.taobao.com':{
+            feedSelector:'.image-link',
+            sFrag       :'_160x160',
+            bFrag       :'_450x10000'
         }
     };
 
