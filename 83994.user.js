@@ -17,7 +17,8 @@
 // @include         http://*qzone.qq.com/*
 // @include         http://i.taobao.com/*
 // @include         http://*t.cntv.cn*
-// @include         http://*tieba.baidu.com*
+// @include         http://*tieba.baidu.com/f*
+// @include         http://*tieba.baidu.com/i*
 //
 // ==/UserScript==
 
@@ -158,10 +159,15 @@
             sFrag       :'_160x160',
             bFrag       :'_450x10000'
         },
-        'tieba.baidu.com':{
+        'tieba.baidu.com/f':{
             feedSelector:'.threadlist_media li',
             bigSrc: 'bpic'
+        },
+        'tieba.baidu.com/i':{
+            feedSelector:'.feat_img',
+            bigSrc: 'data-field'
         }
+
     };
 
     // 居中显示的图片对象
