@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name            iPop - 微博浮图
+// @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.1
+// @version         3.0.2
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -17,12 +17,13 @@
 // @include         http://*qzone.qq.com/*
 // @include         http://i.taobao.com/*
 // @include         http://*t.cntv.cn*
+// @include         http://*tieba.baidu.com*
 //
 // ==/UserScript==
 
 // @author      afc163
 // @weibo       http://weibo.com/afc163
-// @code        https://github.com/afc163/iPop
+// @code        https://github.com/afc163/MiniblogImgPop
 // @blog        http://pianyou.me
 // @date        2010.8.12
 // @modified    2010.9.14
@@ -76,6 +77,7 @@
 //                          4.修复t.163.com失效的问题
 // @modified    2012.10.19  1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
 // @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
+// @modified    2013.02.17  支持我的淘宝和百度贴吧 
 
 (function() {
 
@@ -155,6 +157,10 @@
             feedSelector:'.thumb-image',
             sFrag       :'_160x160',
             bFrag       :'_450x10000'
+        },
+        'tieba.baidu.com':{
+            feedSelector:'.threadlist_media li',
+            bigSrc: 'bpic'
         }
     };
 
@@ -181,8 +187,7 @@
                     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
                     that.img.style.top = (scrollTop + (window.innerHeight - this.height)/2) + 10 + 'px';
                     that.allowMove = false;
-                }
-                else {
+                } else {
                     that.allowMove = true;                    
                     that.move(e);
                 }
@@ -225,12 +230,11 @@
             var tempimgs, tempimg, imgsrc, i, l,
                 sname = MiniblogImgPop.sitename,
                 config = MiniblogImgPop.config;
-            if(obj.tagName === 'IMG' || obj.tagName === 'img') {
+            if (obj.tagName === 'IMG' || obj.tagName === 'img') {
                 tempimg = obj;
-            }
-            else{
+            } else {
                 tempimgs = obj.getElementsByTagName('IMG');
-                if(!tempimgs || tempimgs.length === 0) {
+                if (!tempimgs || tempimgs.length === 0) {
                     throw 'cant found the img node.';
                 }
                 else{
@@ -239,15 +243,15 @@
             }
 
             //针对使用额外属性保存大图地址的网站
-            if(config.bigSrc) {
-                return tempimg.getAttribute(config.bigSrc);
+            if (config.bigSrc) {
+                return tempimg.getAttribute(config.bigSrc) || 'javascript:;';
             }
 
             //一般处理
             imgsrc = tempimg.getAttribute('src');
             //console.info(imgsrc);
             imgsrc = decodeURIComponent(imgsrc);
-            if(typeof config.sFrag === 'object') {
+            if (typeof config.sFrag === 'object') {
                 for(i=0, l=config.sFrag.length; i<l; i++) {
                     imgsrc = imgsrc.replace(config.sFrag[i], config.bFrag[i]);
                 }
@@ -348,12 +352,12 @@
         addZListener: function() {
             var that = this;
             window.addEventListener('keydown', function(e) {
-                if(e.keyCode === 90) {
+                if (e.keyCode === 90) {
                     that.zPressing = true;
                 }
             }, false);
             window.addEventListener('keyup', function(e) {
-                if(e.keyCode === 90) {
+                if (e.keyCode === 90) {
                     that.zPressing = false;
                     PopImg.hide();
                 }
@@ -364,7 +368,7 @@
         _getSiteName: function() {
             var i, each;
             for(each in MIPConfig) {
-                if(location.href.indexOf(each) != -1) {
+                if (location.href.indexOf(each) != -1) {
                     return each;
                 }
             }
@@ -419,7 +423,7 @@
             if (e && e.target && selector) {
                 nodes = el.querySelectorAll(selector);
                 for(i=0; i<nodes.length; i++) {
-                    if(e.target == nodes[i] || isInDomChain(e.target, nodes[i], el)) {
+                    if (e.target == nodes[i] || isInDomChain(e.target, nodes[i], el)) {
                         return nodes[i];
                     }
                 }
@@ -540,16 +544,14 @@
     // 增加自定义样式
     GM_addStyle("\
         #miniblogImgPop {\
-            box-shadow: 0 0 15px #222;\
-            border: 7px solid rgba(255, 255, 255, 0.7);\
-            border-radius: 2px;\
+            border: 7px solid rgba(255,255,255,0.75);\
+            box-shadow: 0 1px 12px rgba(0, 0, 0, 1), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
             z-index: 12345;\
             opacity: 0;\
             margin-top: 0;\
             position: absolute;\
             visibility: hidden;\
             transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
-            -webkit-transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
         }\
     ");
 
@@ -563,7 +565,6 @@
             opacity: 0;\
             position: absolute;\
             transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
-            -webkit-transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
         }\
     ");
 
