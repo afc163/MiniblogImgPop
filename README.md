@@ -1,4 +1,4 @@
-# iPop - 微博浮图
+# MiniblogImgPop - 微博浮图
 
 针对微博网站,鼠标移过小图弹出浮动大图的脚本,让您看微博图片时鼠标不再滴滴答答。
 
@@ -10,5 +10,5 @@
 
 * 油猴脚本安装地址：http://userscripts.org/scripts/show/83994
 
-* firefox扩展安装地址：https://addons.mozilla.org/zh-CN/firefox/addon/ipop/
+* firefox扩展安装地址：https://addons.mozilla.org/zh-CN/firefox/addon/MiniblogImgPop/
 
