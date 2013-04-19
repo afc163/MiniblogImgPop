@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.2
+// @version         3.0.3
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -78,7 +78,8 @@
 //                          4.修复t.163.com失效的问题
 // @modified    2012.10.19  1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
 // @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
-// @modified    2013.02.17  支持我的淘宝和百度贴吧 
+// @modified    2013.02.17  支持我的淘宝和百度贴吧
+// @modified    2013.04.19  支持新浪微博多图
 
 (function() {
 
@@ -96,8 +97,8 @@
         },
         'weibo.com':{
             feedSelector:'.bigcursor',
-            sFrag       :'thumbnail',
-            bFrag       :'bmiddle'
+            sFrag       :['thumbnail', 'square'],
+            bFrag       :['bmiddle', 'bmiddle']
         },
         't.sohu.com':{
             feedSelector:'.pic',
@@ -575,3 +576,4 @@
     ");
 
 })();
+
