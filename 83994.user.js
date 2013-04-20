@@ -96,7 +96,7 @@
             bFrag       :'large'
         },
         'weibo.com':{
-            feedSelector:'.bigcursor',
+            feedSelector:'.bigcursor, .feed_img',
             sFrag       :['thumbnail', 'square'],
             bFrag       :['bmiddle', 'bmiddle']
         },
@@ -576,4 +576,3 @@
     ");
 
 })();
-
