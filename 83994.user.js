@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.3
+// @version         3.0.4
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -80,6 +80,7 @@
 // @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
 // @modified    2013.02.17  支持我的淘宝和百度贴吧
 // @modified    2013.04.19  支持新浪微博多图
+// @modified    2013.05.03  支持新版腾讯微博，并修复了在腾讯微博大图上也会浮出图片的问题
 
 (function() {
 
@@ -111,9 +112,9 @@
             bFrag       :['w=440', '&gif=0']
         },
         't.qq.com':{
-            feedSelector:'.pic img',
-            sFrag       :'/160',
-            bFrag       :'/460'
+            feedSelector:'.pic img:not(.large)',
+            sFrag       :['/160', '/120'],
+            bFrag       :['/460', '/460']
         },
         't.titan24.com':{
             feedSelector:'.imgBig',
