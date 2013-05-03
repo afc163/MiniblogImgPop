@@ -80,7 +80,9 @@
 // @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
 // @modified    2013.02.17  支持我的淘宝和百度贴吧
 // @modified    2013.04.19  支持新浪微博多图
-// @modified    2013.05.03  支持新版腾讯微博，并修复了在腾讯微博大图上也会浮出图片的问题
+// @modified    2013.05.03  1. 支持新版腾讯微博
+//                          2. 修复了在腾讯微博大图上也会浮出图片的问题
+//                          3. 支持新浪微吧
 
 (function() {
 
@@ -97,7 +99,7 @@
             bFrag       :'large'
         },
         'weibo.com':{
-            feedSelector:'.bigcursor, .feed_img',
+            feedSelector:'.bigcursor, .feed_img, .media_list img',
             sFrag       :['thumbnail', 'square'],
             bFrag       :['bmiddle', 'bmiddle']
         },
