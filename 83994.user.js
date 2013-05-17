@@ -186,7 +186,7 @@
         show: function(e) {
             this.allowMove = false;
             // fix firefox 22 beta 1
-            this._hideTimer && clearTimeout(this._hideTimer);
+            this._hideTimer && window.clearTimeout(this._hideTimer);
 
             var that = this;
             var smallImg = MiniblogImgPop.smallImg;
@@ -220,7 +220,7 @@
             PopBar.hide();
             this.shown = false;
 
-            this._hideTimer = setTimeout(function() {
+            this._hideTimer = window.setTimeout(function() {
                 that.img.src = '';
                 that.img.style.visibility = 'hidden';
             }, 200);
