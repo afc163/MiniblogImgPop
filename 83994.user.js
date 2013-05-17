@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.4
+// @version         3.0.5
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -19,6 +19,7 @@
 // @include         http://*t.cntv.cn*
 // @include         http://*tieba.baidu.com/f*
 // @include         http://*tieba.baidu.com/i*
+// @include         http://*xueqiu.com/*
 //
 // ==/UserScript==
 
@@ -77,10 +78,13 @@
 //                          3.优化图片的显示效果
 //                          4.修复t.163.com失效的问题
 // @modified    2012.10.19  1.重大改动，优化看长图片的方式，不用点鼠标和键盘就能看大图。
-// @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博 
+// @modified    2013.02.06  代码优化，修复人民微博失效的问题，并支持央视微博
 // @modified    2013.02.17  支持我的淘宝和百度贴吧
 // @modified    2013.04.19  支持新浪微博多图
 // @modified    2013.05.03  支持新版腾讯微博，并修复了在腾讯微博大图上也会浮出图片的问题
+// @modified    2013.05.17  1.修复 Firefox 22 beta 失效的问题
+//                          2.支持雪球网
+//                          3.去掉Z键看大图的支持
 
 (function() {
 
@@ -149,12 +153,12 @@
         'qzone.qq.com':{
             feedSelector:'.img_box a',
             sFrag       :'/160',
-            bFrag       :'/460' 
+            bFrag       :'/460'
         },
         't.cntv.cn':{
             feedSelector:'.zoom-move',
             sFrag       :'/thumbnail',
-            bFrag       :'/bmiddle' 
+            bFrag       :'/bmiddle'
         },
         'i.taobao.com':{
             feedSelector:'.thumb-image',
@@ -168,8 +172,12 @@
         'tieba.baidu.com/i':{
             feedSelector:'.feat_img',
             bigSrc: 'data-field'
+        },
+        'xueqiu.com':{
+            feedSelector:'.expandable > img',
+            sFrag       :'!thumb',
+            bFrag       :'!custom'
         }
-
     };
 
     // 居中显示的图片对象
@@ -177,7 +185,9 @@
 
         show: function(e) {
             this.allowMove = false;
-            clearTimeout(this._hideTimer);
+            // fix firefox 22 beta 1
+            this._hideTimer && clearTimeout(this._hideTimer);
+
             var that = this;
             var smallImg = MiniblogImgPop.smallImg;
             var src = this._getBigImgsrc(smallImg);
@@ -196,7 +206,7 @@
                     that.img.style.top = (scrollTop + (window.innerHeight - this.height)/2) + 10 + 'px';
                     that.allowMove = false;
                 } else {
-                    that.allowMove = true;                    
+                    that.allowMove = true;
                     that.move(e);
                 }
             });
@@ -206,13 +216,14 @@
             var that = this;
             this.img.style.opacity = 0;
             this.img.style.marginTop = '0px';
-            this._hideTimer = setTimeout(function() {
-                that.img.src = '';
-                that.img.style.visibility = 'hidden';                
-            }, 200);
 
             PopBar.hide();
             this.shown = false;
+
+            this._hideTimer = setTimeout(function() {
+                that.img.src = '';
+                that.img.style.visibility = 'hidden';
+            }, 200);
         },
 
         init: function() {
@@ -231,7 +242,7 @@
             PopBar.move(e);
             // 根据PopBar的位置算出大图的位置
             var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 10 + 'px';
+            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 14 + 'px';
         },
 
         _getBigImgsrc: function(obj) {
@@ -288,11 +299,11 @@
                 this.bar.style.height = parseInt(window.innerHeight/this.scale, 10) + 'px';
             }
             else {
-                this.bar.style.height = this.sOffset.height + 'px';            
+                this.bar.style.height = this.sOffset.height + 'px';
             }
 
             // 计算bar的Top值可以允许的范围
-            this.range = this.sOffset.height - this.bar.offsetHeight;            
+            this.range = this.sOffset.height - this.bar.offsetHeight;
 
             // 计算bar的位置
             this.bar.style.left = this.sOffset.x + this.sOffset.width + 'px';
@@ -340,36 +351,15 @@
         addImgsEventListener: function() {
             var that = this;
             delegate(document.body, 'mouseover', function(e, node) {
-                if (!that.zPressing) {
-                    that.smallImg = node;
-                    PopImg.show(e);
-                }
+                that.smallImg = node;
+                PopImg.show(e);
             }, this.config.feedSelector);
             delegate(document.body, 'mouseout', function() {
-                if (!that.zPressing) {
-                    PopImg.hide();
-                }
+                PopImg.hide();
             }, this.config.feedSelector);
             delegate(document.body, 'mousemove', function(e) {
-                if (!that.zPressing) {
-                    PopImg.move(e);
-                }
+                PopImg.move(e);
             }, this.config.feedSelector);
-        },
-
-        addZListener: function() {
-            var that = this;
-            window.addEventListener('keydown', function(e) {
-                if (e.keyCode === 90) {
-                    that.zPressing = true;
-                }
-            }, false);
-            window.addEventListener('keyup', function(e) {
-                if (e.keyCode === 90) {
-                    that.zPressing = false;
-                    PopImg.hide();
-                }
-            }, false);
         },
 
         // 获得当前站点名
@@ -390,8 +380,6 @@
             this.prepare();
             // 绑定imgs hover事件
             this.addImgsEventListener();
-            // 绑定按键z事件，使图片不会消失，方便看大图
-            this.addZListener();
         }
 
     };
@@ -404,7 +392,7 @@
     // ---
 
     function $(selector) {
-        return document.querySelectorAll(selector); 
+        return document.querySelectorAll(selector);
     }
 
     function offset(source) {
@@ -420,7 +408,7 @@
     function delegate(el, eventType, handler, selector) {
         el = el || document;
         el.addEventListener(eventType, function(e) {
-            var node = getHandlerNode(e, selector, el); 
+            var node = getHandlerNode(e, selector, el);
             node && handler.call(el, e, node);
         }, false);
 
