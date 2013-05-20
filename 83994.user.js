@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.5
+// @version         3.0.6
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -101,7 +101,7 @@
             bFrag       :'large'
         },
         'weibo.com':{
-            feedSelector:'.bigcursor, .feed_img',
+            feedSelector:'.bigcursor, .feed_img, .media_list img',
             sFrag       :['thumbnail', 'square'],
             bFrag       :['bmiddle', 'bmiddle']
         },
@@ -352,9 +352,11 @@
             var that = this;
             delegate(document.body, 'mouseover', function(e, node) {
                 that.smallImg = node;
+                node.style.opacity = 0.84;
                 PopImg.show(e);
             }, this.config.feedSelector);
-            delegate(document.body, 'mouseout', function() {
+            delegate(document.body, 'mouseout', function(e, node) {
+                node.style.opacity = '';
                 PopImg.hide();
             }, this.config.feedSelector);
             delegate(document.body, 'mousemove', function(e) {
