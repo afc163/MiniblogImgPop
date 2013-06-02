@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.6
+// @version         3.0.7
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -85,6 +85,7 @@
 // @modified    2013.05.17  1.修复 Firefox 22 beta 失效的问题
 //                          2.支持雪球网
 //                          3.去掉Z键看大图的支持
+// @modified    2013.06.02  1.添加图片预加载功能，减少等待大图的时间
 
 (function() {
 
@@ -190,7 +191,7 @@
 
             var that = this;
             var smallImg = MiniblogImgPop.smallImg;
-            var src = this._getBigImgsrc(smallImg);
+            var src = this.getBigImgsrc(smallImg);
             this.img.src = src;
 
             imgReady(src, function() {
@@ -245,7 +246,7 @@
             this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 14 + 'px';
         },
 
-        _getBigImgsrc: function(obj) {
+        getBigImgsrc: function(obj) {
             var tempimgs, tempimg, imgsrc, i, l,
                 sname = MiniblogImgPop.sitename,
                 config = MiniblogImgPop.config;
@@ -343,6 +344,17 @@
 
     var MiniblogImgPop = {
 
+    	preloadImg: function() {
+			var that = this;
+			window.setTimeout(function() {
+				var nodes = $(that.config.feedSelector);
+				for (var i=0; i<nodes.length; i++) {
+					var preloadImg = new Image();
+					preloadImg.src = PopImg.getBigImgsrc(nodes[i]);
+				}
+			}, 1500);
+		},
+
         prepare: function() {
             this.sitename = this._getSiteName();
             this.config = MIPConfig[this.sitename];
@@ -382,6 +394,8 @@
             this.prepare();
             // 绑定imgs hover事件
             this.addImgsEventListener();
+			// 预加载大图
+			this.preloadImg();
         }
 
     };
@@ -477,7 +491,7 @@
 
         // 停止所有定时器队列
         stop = function () {
-            clearInterval(intervalId);
+            window.clearInterval(intervalId);
             intervalId = null;
         };
 
