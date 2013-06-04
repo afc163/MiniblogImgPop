@@ -2,7 +2,7 @@
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.7
+// @version         3.0.8
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -82,10 +82,11 @@
 // @modified    2013.02.17  支持我的淘宝和百度贴吧
 // @modified    2013.04.19  支持新浪微博多图
 // @modified    2013.05.03  支持新版腾讯微博，并修复了在腾讯微博大图上也会浮出图片的问题
-// @modified    2013.05.17  1.修复 Firefox 22 beta 失效的问题
+// @3.0.6       2013.05.17  1.修复 Firefox 22 beta 失效的问题
 //                          2.支持雪球网
 //                          3.去掉Z键看大图的支持
-// @modified    2013.06.02  1.添加图片预加载功能，减少等待大图的时间
+// @3.0.7       2013.06.02  1.添加图片预加载功能，减少等待大图的时间
+// @3.0.8       2013.06.04  1.修复 chrome 27 没有 GM_addStyle 方法的问题
 
 (function() {
 
@@ -553,11 +554,19 @@
         };
     })();
 
+    // GM_addStyle function is not existed in chrome 27
+    var GM_addStyle = GM_addStyle || function(css) {
+        var style = document.createElement("style");
+        style.type = "text/css";
+        style.appendChild(document.createTextNode(css));
+        document.getElementsByTagName("head")[0].appendChild(style);
+    };
+
     // 增加自定义样式
     GM_addStyle("\
         #miniblogImgPop {\
-            border: 7px solid rgba(255,255,255,0.75);\
-            box-shadow: 0 1px 12px rgba(0, 0, 0, 1), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
+            border: 7px solid rgba(255,255,255,0.8);\
+            box-shadow: 0 1px 15px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
             z-index: 12345;\
             opacity: 0;\
             margin-top: 0;\
@@ -570,8 +579,9 @@
     // 增加自定义样式
     GM_addStyle("\
         #miniblogImgPop-bar {\
-            border-right: 5px solid #e80;\
-            border-radius: 7px;\
+            border-right: 4px solid rgb(255, 154, 26);\
+            border-left: 2px solid rgb(255, 242, 171);\
+            border-radius: 0 3px 3px 0;\
             width:0;\
             z-index: 999;\
             opacity: 0;\
