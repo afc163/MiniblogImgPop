@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name            MiniblogImgPop - 微博浮图
 // @namespace       http://userscripts.org/users/83994
+// @icon            https://addons.cdn.mozilla.net/img/uploads/addon_icons/337/337281-64.png?modified=1361080128
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.8
+// @version         3.0.9
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -14,13 +15,14 @@
 // @include         http://*tianya.cn/*
 // @include         http://*diandian.com/*
 // @include         http://*.digu.com/*
-// @include         http://*qzone.qq.com/*
 // @include         http://i.taobao.com/*
 // @include         http://*t.cntv.cn*
 // @include         http://*tieba.baidu.com/f*
 // @include         http://*tieba.baidu.com/i*
 // @include         http://*xueqiu.com/*
-//
+// @updateURL       http://userscripts.org/scripts/source/83994.meta.js
+// @downloadURL     http://userscripts.org/scripts/source/83994.user.js
+// @grant           none
 // ==/UserScript==
 
 // @author      afc163
@@ -28,6 +30,7 @@
 // @code        https://github.com/afc163/MiniblogImgPop
 // @blog        http://pianyou.me
 // @date        2010.8.12
+
 // @modified    2010.9.14
 // @modified    2010.9.17   修改代码使其只多增加一个img标签，无论计算大图大小和显示大图都使用同一个img标签
 // @modified    2010.9.20   imgHeight等于10px，表示图片层的上下边框大小之和，其图片尚未载入
@@ -151,11 +154,6 @@
             feedSelector:'.picture',
             sFrag       :'_100x75',
             bFrag       :'_640x480'
-        },
-        'qzone.qq.com':{
-            feedSelector:'.img_box a',
-            sFrag       :'/160',
-            bFrag       :'/460'
         },
         't.cntv.cn':{
             feedSelector:'.zoom-move',
