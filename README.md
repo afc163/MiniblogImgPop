@@ -8,7 +8,7 @@
 
 ---
 
-* 油猴脚本安装地址：http://userscripts.org/scripts/show/83994
+* 油猴脚本安装地址：~~http://userscripts.org/scripts/show/83994~~ 和 https://greasyfork.org/zh-CN/scripts/4233
 
 * firefox扩展安装地址：https://addons.mozilla.org/zh-CN/firefox/addon/MiniblogImgPop/
 
