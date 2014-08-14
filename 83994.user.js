@@ -3,7 +3,7 @@
 // @namespace       http://userscripts.org/users/83994
 // @icon            https://addons.cdn.mozilla.net/img/uploads/addon_icons/337/337281-64.png?modified=1361080128
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.0.9
+// @version         3.1.0
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -199,7 +199,7 @@
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
-                PopBar.show(e);
+                Mask.show(e);
 
                 if (window.innerHeight > this.height) {
                     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
@@ -217,7 +217,7 @@
             this.img.style.opacity = 0;
             this.img.style.marginTop = '0px';
 
-            PopBar.hide();
+            Mask.hide();
             this.shown = false;
 
             this._hideTimer = window.setTimeout(function() {
@@ -232,17 +232,17 @@
             document.body.appendChild(node);
             this.img = node;
 
-            PopBar.init();
+            Mask.init();
         },
 
         move: function(e) {
             if (!this.allowMove) {
                 return;
             }
-            PopBar.move(e);
-            // 根据PopBar的位置算出大图的位置
+            Mask.move(e);
+            // 根据 Mask 的位置算出大图的位置
             var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            this.img.style.top = (scrollTop - PopBar.top * PopBar.scale) + 14 + 'px';
+            this.img.style.top = (scrollTop - Mask.top * Mask.scale) + 14 + 'px';
         },
 
         getBigImgsrc: function(obj) {
@@ -283,8 +283,8 @@
 
     };
 
-    // 指示当前可视区域的Bar
-    var PopBar = {
+    // 图片上遮罩的阴影
+    var Mask = {
         show: function(e) {
             var smallImg = MiniblogImgPop.smallImg,
                 bigImg = PopImg.img;
@@ -296,63 +296,69 @@
 
             // 计算出bar的高度
             if (window.innerHeight < bigImg.height) {
-                this.bar.style.height = parseInt(window.innerHeight/this.scale, 10) + 'px';
-            }
-            else {
-                this.bar.style.height = this.sOffset.height + 'px';
+                this.height = parseInt(window.innerHeight/this.scale, 10);
+            } else {
+                this.height = this.sOffset.height;
             }
 
             // 计算bar的Top值可以允许的范围
-            this.range = this.sOffset.height - this.bar.offsetHeight;
+            this.range = this.sOffset.height - this.height;
 
-            // 计算bar的位置
-            this.bar.style.left = this.sOffset.x + this.sOffset.width + 'px';
+            // 计算 mask 的位置
+            this.nodes[0].style.left = this.sOffset.x + 'px';
+            this.nodes[0].style.width = this.sOffset.width + 'px';
+            this.nodes[0].style.top = this.sOffset.y + 'px';
+            this.nodes[1].style.left = this.sOffset.x + 'px';
+            this.nodes[1].style.width = this.sOffset.width + 'px';
+            this.nodes[1].style.bottom = (window.innerHeight - this.sOffset.y - this.sOffset.height) + 'px';
             this.move(e);
 
-            // 显示bar
-            this.bar.style.opacity = 1;
+            this.nodes[0].style.opacity = 0.7;
+            this.nodes[1].style.opacity = 0.7;
         },
-
-        // 主要是计算bar的top位置
+        hide: function() {
+            this.nodes[0].style.opacity = 0;
+            this.nodes[1].style.opacity = 0;
+            this.nodes[0].style.height = 0;
+            this.nodes[1].style.height = 0;
+        },
         move: function(e) {
             // 计算鼠标相对于元素的位置
             var x = e.pageX - this.sOffset.x,
                 y = e.pageY - this.sOffset.y;
 
             // 计算bar的top值
-            var top = y - this.bar.offsetHeight/2;
+            var top = y - this.height/2;
             top = top < 0 ? 0 : top;
             top = top > this.range ? this.range : top;
             this.top = top;
 
-            this.bar.style.top = top + this.sOffset.y + 'px';
+            this.nodes[0].style.height = top + 'px';
+            this.nodes[1].style.height = (this.sOffset.height - top - this.height) + 'px';
         },
-
-        hide: function() {
-            this.bar.style.opacity = 0;
-            this.bar.style.height = '0px';
-        },
-
         init: function() {
-            var node = document.createElement('div');
-            node.id = 'miniblogImgPop-bar';
-            document.body.appendChild(node);
-            this.bar = node;
+            var node1 = document.createElement('div');
+            node1.className = 'miniblogImgPop-mask';
+            document.body.appendChild(node1);
+            var node2 = document.createElement('div');
+            node2.className = 'miniblogImgPop-mask';
+            document.body.appendChild(node2);
+            this.nodes = [node1, node2];
         }
     };
 
     var MiniblogImgPop = {
 
-    	preloadImg: function() {
-			var that = this;
-			window.setTimeout(function() {
-				var nodes = $(that.config.feedSelector);
-				for (var i=0; i<nodes.length; i++) {
-					var preloadImg = new Image();
-					preloadImg.src = PopImg.getBigImgsrc(nodes[i]);
-				}
-			}, 1500);
-		},
+        preloadImg: function() {
+            var that = this;
+            window.setTimeout(function() {
+                var nodes = $(that.config.feedSelector);
+                for (var i=0; i<nodes.length; i++) {
+                    var preloadImg = new Image();
+                    preloadImg.src = PopImg.getBigImgsrc(nodes[i]);
+                }
+            }, 1500);
+        },
 
         prepare: function() {
             this.sitename = this._getSiteName();
@@ -393,8 +399,8 @@
             this.prepare();
             // 绑定imgs hover事件
             this.addImgsEventListener();
-			// 预加载大图
-			this.preloadImg();
+            // 预加载大图
+            this.preloadImg();
         }
 
     };
@@ -411,7 +417,12 @@
     }
 
     function offset(source) {
-        var pt = {x:0,y:0,width:source.offsetWidth,height:source.offsetHeight};
+        var pt = {
+            x:0,
+            y:0,
+            width:source.offsetWidth,
+            height:source.offsetHeight
+        };
         do {
             pt.x += source.offsetLeft;
             pt.y += source.offsetTop;
@@ -563,8 +574,8 @@
     // 增加自定义样式
     GM_addStyle("\
         #miniblogImgPop {\
-            border: 7px solid rgba(255,255,255,0.8);\
-            box-shadow: 0 1px 15px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
+            border: 7px solid rgba(255,255,255,1);\
+            box-shadow: 0 1px 30px rgba(0, 0, 0, 0.75), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
             z-index: 12345;\
             opacity: 0;\
             margin-top: 0;\
@@ -576,15 +587,11 @@
 
     // 增加自定义样式
     GM_addStyle("\
-        #miniblogImgPop-bar {\
-            border-right: 4px solid rgb(255, 154, 26);\
-            border-left: 2px solid rgb(255, 242, 171);\
-            border-radius: 0 3px 3px 0;\
-            width:0;\
+        .miniblogImgPop-mask {\
+            background: rgb(0, 0, 0);\
             z-index: 999;\
-            opacity: 0;\
             position: absolute;\
-            transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
+            transition: opacity 0.4s ease-out 0;\
         }\
     ");
 
