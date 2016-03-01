@@ -3,7 +3,7 @@
 // @namespace       http://userscripts.org/users/83994
 // @icon            https://addons.cdn.mozilla.net/img/uploads/addon_icons/337/337281-64.png?modified=1361080128
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.1.0
+// @version         3.2.0
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -20,8 +20,6 @@
 // @include         http://*tieba.baidu.com/f*
 // @include         http://*tieba.baidu.com/i*
 // @include         http://*xueqiu.com/*
-// @updateURL       http://userscripts.org/scripts/source/83994.meta.js
-// @downloadURL     http://userscripts.org/scripts/source/83994.user.js
 // @grant           none
 // ==/UserScript==
 
@@ -107,8 +105,8 @@
         },
         'weibo.com':{
             feedSelector:'.bigcursor, .feed_img, .media_list img',
-            sFrag       :['thumbnail', 'square'],
-            bFrag       :['bmiddle', 'bmiddle']
+            sFrag       :['thumb180', 'orj480'],
+            bFrag       :['mw690', 'mw690']
         },
         't.sohu.com':{
             feedSelector:'.pic',
@@ -195,7 +193,7 @@
 
             imgReady(src, function() {
                 var pos = offset(smallImg);
-                that.img.style.left = pos.x + 180 + 'px';
+                that.img.style.left = pos.x + pos.width + 30 + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
@@ -581,6 +579,7 @@
             margin-top: 0;\
             position: absolute;\
             visibility: hidden;\
+            max-width: 500px;\
             transition: opacity 0.2s ease-out 0s, margin-top 0.2s ease-out 0s;\
         }\
     ");
