@@ -105,8 +105,8 @@
         },
         'weibo.com':{
             feedSelector:'.bigcursor, .feed_img, .media_list img',
-            sFrag       :['thumb180', 'orj480'],
-            bFrag       :['mw690', 'mw690']
+            sFrag       :['thumb180', 'orj480', 'thumbnail', 'square'],
+            bFrag       :['mw690', 'mw690', 'bmiddle', 'bmiddle']
         },
         't.sohu.com':{
             feedSelector:'.pic',
