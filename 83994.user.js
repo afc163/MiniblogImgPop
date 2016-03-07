@@ -20,6 +20,7 @@
 // @include         http://*tieba.baidu.com/f*
 // @include         http://*tieba.baidu.com/i*
 // @include         http://*xueqiu.com/*
+// @include         https://*douban.com/*
 // @grant           none
 // ==/UserScript==
 
@@ -175,6 +176,11 @@
             feedSelector:'.expandable > img',
             sFrag       :'!thumb',
             bFrag       :'!custom'
+        },
+        'douban.com':{
+            feedSelector:'img',
+            sFrag       :'median',
+            bFrag       :'raw'
         }
     };
 
