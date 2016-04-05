@@ -199,7 +199,12 @@
 
             imgReady(src, function() {
                 var pos = offset(smallImg);
-                that.img.style.left = pos.x + pos.width + 30 + 'px';
+                var left = pos.x + pos.width + 30;
+                var width = Math.min(this.width, 500);
+                if (left + width > window.innerWidth) {
+                    left = pos.x - width - 30;
+                }
+                that.img.style.left = left + 'px';
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
