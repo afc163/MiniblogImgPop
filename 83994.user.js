@@ -196,15 +196,12 @@
             var smallImg = MiniblogImgPop.smallImg;
             var src = this.getBigImgsrc(smallImg);
             this.img.src = src;
+            this.imgWidth = 500;
 
             imgReady(src, function() {
-                var pos = offset(smallImg);
-                var left = pos.x + pos.width + 30;
-                var width = Math.min(this.width, 500);
-                if (left + width > window.innerWidth) {
-                    left = pos.x - width - 30;
-                }
-                that.img.style.left = left + 'px';
+                that.imgWidth = this.width;
+                that.layoutImg(e);
+
                 that.img.style.opacity = 1;
                 that.img.style.visibility = 'visible';
                 that.img.style.marginTop = '-15px';
@@ -219,6 +216,32 @@
                     that.move(e);
                 }
             });
+        },
+
+        // 设置大图的宽度与位置
+        layoutImg: function(e) {
+            var pos = offset(MiniblogImgPop.smallImg);
+            var left = pos.x + pos.width + 30;
+            var width = Math.min(this.imgWidth, 500);
+            // 如果小图右边放不下
+            if (left + width > window.innerWidth) {
+                left = pos.x - width - 30;
+                // 如果左边也放不下
+                if (left < 0) {
+                    // 根据鼠标位置，选择空间大的一侧放置
+                    if (e.pageX > window.innerWidth / 2) {
+                        // 放置在左边
+                        width = Math.min(width, e.pageX - 30);
+                        left = 0;
+                    } else {
+                        // 放置在右边
+                        width = Math.min(width, window.innerWidth - e.pageX - 30);
+                        left = window.innerWidth - width;
+                    }
+                }
+            }
+            this.img.style.width = width + 'px';
+            this.img.style.left = left + 'px';
         },
 
         hide: function() {
@@ -245,6 +268,7 @@
         },
 
         move: function(e) {
+            this.layoutImg(e); // 重新计算大图宽度与位置
             if (!this.allowMove) {
                 return;
             }
