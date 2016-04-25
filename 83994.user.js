@@ -3,7 +3,7 @@
 // @namespace       http://userscripts.org/users/83994
 // @icon            https://addons.cdn.mozilla.net/img/uploads/addon_icons/337/337281-64.png?modified=1361080128
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.3.0
+// @version         3.4.0
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         http://*t.163.com/*
@@ -21,6 +21,7 @@
 // @include         http://*tieba.baidu.com/i*
 // @include         http://*xueqiu.com/*
 // @include         https://*douban.com/*
+// @include         https://*work.alibaba-inc.com/*
 // @grant           none
 // ==/UserScript==
 
@@ -181,6 +182,11 @@
             feedSelector:'img',
             sFrag       :'median',
             bFrag       :'raw'
+        },
+        'work.alibaba-inc.com':{
+            feedSelector:'.uxcore-nw-message-wall-item-album-thumb img',
+            sFrag       :'240x240',
+            bFrag       :'620x10000'
         }
     };
 
