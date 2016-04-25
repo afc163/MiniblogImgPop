@@ -223,7 +223,7 @@
           imgDisplayHeight = this.height + 14;
         }
 
-        if (window.innerHeight > this.height) {
+        if (window.innerHeight > imgDisplayHeight) {
           var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
           that.img.style.top = (scrollTop + (window.innerHeight - imgDisplayHeight)/2 + 15) + 'px';
           that.allowMove = false;
