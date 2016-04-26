@@ -184,7 +184,7 @@
       bFrag       :'raw'
     },
     'work.alibaba-inc.com':{
-      feedSelector:'.uxcore-nw-message-wall-item-album-thumb img',
+      feedSelector:'.uxcore-nw-message-wall-item-album-thumb li',
       sFrag       :['240x240', '120x120'],
       bFrag       :['620x10000', '620x10000']
     }
