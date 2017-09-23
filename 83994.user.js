@@ -6,6 +6,7 @@
 // @version         3.4.1
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
+// @include         https://*weibo.com/*
 // @include         http://*t.163.com/*
 // @include         http://*t.sohu.com/*
 // @include         http://*t.qq.com/*
