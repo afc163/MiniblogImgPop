@@ -3,7 +3,7 @@
 // @namespace       http://userscripts.org/users/83994
 // @icon            https://addons.cdn.mozilla.net/img/uploads/addon_icons/337/337281-64.png?modified=1361080128
 // @description     微博浮图控件，鼠标移过小图弹出浮动大图的脚本
-// @version         3.4.1
+// @version         3.4.2
 // @include         http://*qing.weibo.com/*
 // @include         http://*weibo.com/*
 // @include         https://*weibo.com/*
