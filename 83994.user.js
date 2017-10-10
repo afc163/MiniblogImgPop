@@ -18,7 +18,7 @@
 // @include         http://*.digu.com/*
 // @include         http://i.taobao.com/*
 // @include         http://*t.cntv.cn*
-// @include         http://*tieba.baidu.com/f*
+// @include         *://*tieba.baidu.com/f*
 // @include         http://*tieba.baidu.com/i*
 // @include         http://*xueqiu.com/*
 // @include         https://*douban.com/*
