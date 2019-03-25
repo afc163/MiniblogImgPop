@@ -41,6 +41,11 @@
       sFrag       :'',
       bFrag       :''
     },
+    's.weibo.com':{
+      feedSelector:'[action-type="fl_pics"]',
+      sFrag       :'thumb150',
+      bFrag       :'large'
+    },
     'q.weibo.com':{
       feedSelector:'.bigcursor',
       sFrag       :'thumbnail',
