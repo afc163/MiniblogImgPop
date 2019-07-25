@@ -52,7 +52,7 @@
       bFrag       :'large'
     },
     'weibo.com':{
-      feedSelector:'.bigcursor, .feed_img, .media_list img',
+      feedSelector:'.bigcursor, .feed_img, .media_list img, .m3 > li, .m4 > li',
       sFrag       :['thumb180', 'thumb150', 'orj480', 'orj360', 'thumbnail', 'square'],
       bFrag       :['mw690', 'mw690', 'mw690', 'mw690', 'bmiddle', 'bmiddle']
     },
