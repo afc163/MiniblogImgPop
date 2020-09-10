@@ -32,114 +32,114 @@
 // @blog        http://pianyou.me
 // @date        2010.8.12
 
-(function() {
+(function () {
 
   // 各微博站点的feed配置
   var MIPConfig = {
-    'qing.weibo.com':{
-      feedSelector:'.imgZoomIn',
-      sFrag       :'',
-      bFrag       :''
+    'qing.weibo.com': {
+      feedSelector: '.imgZoomIn',
+      sFrag: '',
+      bFrag: ''
     },
-    's.weibo.com':{
-      feedSelector:'[action-type="fl_pics"]',
-      sFrag       :'thumb150',
-      bFrag       :'large'
+    's.weibo.com': {
+      feedSelector: '[action-type="fl_pics"]',
+      sFrag: 'thumb150',
+      bFrag: 'large'
     },
-    'q.weibo.com':{
-      feedSelector:'.bigcursor',
-      sFrag       :'thumbnail',
-      bFrag       :'large'
+    'q.weibo.com': {
+      feedSelector: '.bigcursor',
+      sFrag: 'thumbnail',
+      bFrag: 'large'
     },
-    'weibo.com':{
-      feedSelector:'.bigcursor, .feed_img, .media_list img',
-      sFrag       :['thumb180', 'thumb150', 'orj480', 'orj360', 'thumbnail', 'square'],
-      bFrag       :['mw690', 'mw690', 'mw690', 'mw690', 'bmiddle', 'bmiddle']
+    'weibo.com': {
+      feedSelector: '.bigcursor, .feed_img, .media_list img, .woo-picture-main img, .wbpro-feed-ogText a, .text a, .woo-avatar-main img',
+      sFrag: ['thumb180', 'thumb150', 'orj480', 'orj360', 'thumbnail', 'square'],
+      bFrag: ['mw690', 'mw690', 'mw690', 'mw690', 'bmiddle', 'bmiddle']
     },
-    't.sohu.com':{
-      feedSelector:'.pic',
-      sFrag       :['/f_','_1.jpg'],
-      bFrag       :['/m_','_0.jpg']
+    't.sohu.com': {
+      feedSelector: '.pic',
+      sFrag: ['/f_', '_1.jpg'],
+      bFrag: ['/m_', '_0.jpg']
     },
-    't.163.com':{
-      feedSelector:'.tweet-preview-pic',
-      sFrag       :['w=140&h=140', '&gif=1'],
-      bFrag       :['w=440', '&gif=0']
+    't.163.com': {
+      feedSelector: '.tweet-preview-pic',
+      sFrag: ['w=140&h=140', '&gif=1'],
+      bFrag: ['w=440', '&gif=0']
     },
-    't.qq.com':{
-      feedSelector:'.pic img:not(.large)',
-      sFrag       :['/160', '/120'],
-      bFrag       :['/460', '/460']
+    't.qq.com': {
+      feedSelector: '.pic img:not(.large)',
+      sFrag: ['/160', '/120'],
+      bFrag: ['/460', '/460']
     },
-    't.titan24.com':{
-      feedSelector:'.imgBig',
-      sFrag       :'_thumbnail',
-      bFrag       :'_middle'
+    't.titan24.com': {
+      feedSelector: '.imgBig',
+      sFrag: '_thumbnail',
+      bFrag: '_middle'
     },
-    't.people.com.cn':{
-      feedSelector:'.list_s_pic img',
-      sFrag:'/s_',
-      bFrag:'/b_'
+    't.people.com.cn': {
+      feedSelector: '.list_s_pic img',
+      sFrag: '/s_',
+      bFrag: '/b_'
     },
-    't.ifeng.com':{
-      feedSelector:'.zoom_in_image img',
-      sFrag       :'/128x160_',
-      bFrag       :'/520x0_'
+    't.ifeng.com': {
+      feedSelector: '.zoom_in_image img',
+      sFrag: '/128x160_',
+      bFrag: '/520x0_'
     },
-    'www.tianya.cn':{
-      feedSelector:'.pic-zoomin',
-      bigSrc      :'_middlepic',
-      sFrag       :'small',
-      bFrag       :'middle'
+    'www.tianya.cn': {
+      feedSelector: '.pic-zoomin',
+      bigSrc: '_middlepic',
+      sFrag: 'small',
+      bFrag: 'middle'
     },
-    'diandian.com':{
-      feedSelector:'.feed-img',
-      bigSrc      :'imgsrc'
+    'diandian.com': {
+      feedSelector: '.feed-img',
+      bigSrc: 'imgsrc'
     },
-    'digu.com':{
-      feedSelector:'.picture',
-      sFrag       :'_100x75',
-      bFrag       :'_640x480'
+    'digu.com': {
+      feedSelector: '.picture',
+      sFrag: '_100x75',
+      bFrag: '_640x480'
     },
-    't.cntv.cn':{
-      feedSelector:'.zoom-move',
-      sFrag       :'/thumbnail',
-      bFrag       :'/bmiddle'
+    't.cntv.cn': {
+      feedSelector: '.zoom-move',
+      sFrag: '/thumbnail',
+      bFrag: '/bmiddle'
     },
-    'i.taobao.com':{
-      feedSelector:'.thumb-image',
-      sFrag       :'_160x160',
-      bFrag       :'_450x10000'
+    'i.taobao.com': {
+      feedSelector: '.thumb-image',
+      sFrag: '_160x160',
+      bFrag: '_450x10000'
     },
-    'tieba.baidu.com/f':{
-      feedSelector:'.threadlist_media li',
+    'tieba.baidu.com/f': {
+      feedSelector: '.threadlist_media li',
       bigSrc: 'bpic'
     },
-    'tieba.baidu.com/i':{
-      feedSelector:'.feat_img',
+    'tieba.baidu.com/i': {
+      feedSelector: '.feat_img',
       bigSrc: 'data-field'
     },
-    'xueqiu.com':{
-      feedSelector:'.expandable > img',
-      sFrag       :'!thumb',
-      bFrag       :'!custom'
+    'xueqiu.com': {
+      feedSelector: '.expandable > img',
+      sFrag: '!thumb',
+      bFrag: '!custom'
     },
-    'douban.com':{
-      feedSelector:'img',
-      sFrag       :'median',
-      bFrag       :'raw'
+    'douban.com': {
+      feedSelector: 'img',
+      sFrag: 'median',
+      bFrag: 'raw'
     },
-    'work.alibaba-inc.com':{
-      feedSelector:'.uxcore-nw-message-wall-item-album-thumb li',
-      sFrag       :['240x240', '120x120'],
-      bFrag       :['620x10000', '620x10000']
+    'work.alibaba-inc.com': {
+      feedSelector: '.uxcore-nw-message-wall-item-album-thumb li',
+      sFrag: ['240x240', '120x120'],
+      bFrag: ['620x10000', '620x10000']
     }
   };
 
   // 居中显示的图片对象
   var PopImg = {
 
-    show: function(e) {
+    show: function (e) {
       this.allowMove = false;
       // fix firefox 22 beta 1
       this._hideTimer && window.clearTimeout(this._hideTimer);
@@ -150,7 +150,7 @@
       this.img.src = src;
       this.imgWidth = 500;
 
-      imgReady(src, function() {
+      imgReady(src, function () {
         that.imgWidth = this.width;
         that.layoutImg(e);
 
@@ -164,14 +164,14 @@
         //  2. 加上边框高度
         var imgDisplayHeight;
         if (this.width > 500) {
-          imgDisplayHeight = (this.height + 14) * 500 / this.width;
+          imgDisplayHeight = (this.height) * 500 / this.width;
         } else {
-          imgDisplayHeight = this.height + 14;
+          imgDisplayHeight = this.height;
         }
 
         if (window.innerHeight > imgDisplayHeight) {
           var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-          that.img.style.top = (scrollTop + (window.innerHeight - imgDisplayHeight)/2 + 15) + 'px';
+          that.img.style.top = (scrollTop + (window.innerHeight - imgDisplayHeight) / 2 + 15) + 'px';
           that.allowMove = false;
         } else {
           that.allowMove = true;
@@ -181,7 +181,7 @@
     },
 
     // 设置大图的宽度与位置
-    layoutImg: function(e) {
+    layoutImg: function (e) {
       var pos = offset(MiniblogImgPop.smallImg);
       var left = pos.x + pos.width + 30;
       var width = Math.min(this.imgWidth, 500);
@@ -206,7 +206,7 @@
       this.img.style.left = left + 'px';
     },
 
-    hide: function() {
+    hide: function () {
       var that = this;
       this.img.style.opacity = 0;
       this.img.style.marginTop = '0px';
@@ -214,13 +214,13 @@
       Mask.hide();
       this.shown = false;
 
-      this._hideTimer = window.setTimeout(function() {
+      this._hideTimer = window.setTimeout(function () {
         that.img.src = '';
         that.img.style.visibility = 'hidden';
       }, 200);
     },
 
-    init: function() {
+    init: function () {
       var node = document.createElement('img');
       node.id = 'miniblogImgPop';
       document.body.appendChild(node);
@@ -229,7 +229,7 @@
       Mask.init();
     },
 
-    move: function(e) {
+    move: function (e) {
       this.layoutImg(e); // 重新计算大图宽度与位置
       if (!this.allowMove) {
         return;
@@ -240,10 +240,10 @@
       this.img.style.top = (scrollTop - Mask.top * Mask.scale) + 14 + 'px';
     },
 
-    getBigImgsrc: function(obj) {
+    getBigImgsrc: function (obj) {
       var tempimgs, tempimg, imgsrc, i, l,
-      sname = MiniblogImgPop.sitename,
-      config = MiniblogImgPop.config;
+        sname = MiniblogImgPop.sitename,
+        config = MiniblogImgPop.config;
       if (obj.tagName === 'IMG' || obj.tagName === 'img') {
         tempimg = obj;
       } else {
@@ -251,7 +251,7 @@
         if (!tempimgs || tempimgs.length === 0) {
           throw 'cant found the img node.';
         }
-        else{
+        else {
           tempimg = tempimgs[0];
         }
       }
@@ -266,12 +266,15 @@
       //console.info(imgsrc);
       imgsrc = decodeURIComponent(imgsrc);
       if (typeof config.sFrag === 'object') {
-        for(i=0, l=config.sFrag.length; i<l; i++) {
+        for (i = 0, l = config.sFrag.length; i < l; i++) {
           imgsrc = imgsrc.replace(config.sFrag[i], config.bFrag[i]);
         }
       }
-      else{
+      else {
         imgsrc = imgsrc.replace(config.sFrag, config.bFrag);
+      }
+      if (obj.tagName === 'a' || obj.tagName === 'A') {
+        imgsrc = obj.href
       }
       return imgsrc;
     }
@@ -280,9 +283,9 @@
 
   // 图片上遮罩的阴影
   var Mask = {
-    show: function(e) {
+    show: function (e) {
       var smallImg = MiniblogImgPop.smallImg,
-      bigImg = PopImg.img;
+        bigImg = PopImg.img;
 
       this.sOffset = offset(smallImg);
 
@@ -291,7 +294,7 @@
 
       // 计算出bar的高度
       if (window.innerHeight < bigImg.height) {
-        this.height = parseInt(window.innerHeight/this.scale, 10);
+        this.height = parseInt(window.innerHeight / this.scale, 10);
       } else {
         this.height = this.sOffset.height;
       }
@@ -311,19 +314,19 @@
       this.nodes[0].style.opacity = 0.7;
       this.nodes[1].style.opacity = 0.7;
     },
-    hide: function() {
+    hide: function () {
       this.nodes[0].style.opacity = 0;
       this.nodes[1].style.opacity = 0;
       this.nodes[0].style.height = 0;
       this.nodes[1].style.height = 0;
     },
-    move: function(e) {
+    move: function (e) {
       // 计算鼠标相对于元素的位置
       var x = e.pageX - this.sOffset.x,
-      y = e.pageY - this.sOffset.y;
+        y = e.pageY - this.sOffset.y;
 
       // 计算bar的top值
-      var top = y - this.height/2;
+      var top = y - this.height / 2;
       top = top < 0 ? 0 : top;
       top = top > this.range ? this.range : top;
       this.top = top;
@@ -331,7 +334,7 @@
       this.nodes[0].style.height = top + 'px';
       this.nodes[1].style.height = (this.sOffset.height - top - this.height) + 'px';
     },
-    init: function() {
+    init: function () {
       var node1 = document.createElement('div');
       node1.className = 'miniblogImgPop-mask';
       document.body.appendChild(node1);
@@ -344,42 +347,42 @@
 
   var MiniblogImgPop = {
 
-    preloadImg: function() {
+    preloadImg: function () {
       var that = this;
-      window.setTimeout(function() {
+      window.setTimeout(function () {
         var nodes = $(that.config.feedSelector);
-        for (var i=0; i<nodes.length; i++) {
+        for (var i = 0; i < nodes.length; i++) {
           var preloadImg = new Image();
           preloadImg.src = PopImg.getBigImgsrc(nodes[i]);
         }
       }, 1500);
     },
 
-    prepare: function() {
+    prepare: function () {
       this.sitename = this._getSiteName();
       this.config = MIPConfig[this.sitename];
     },
 
-    addImgsEventListener: function() {
+    addImgsEventListener: function () {
       var that = this;
-      delegate(document.body, 'mouseover', function(e, node) {
+      delegate(document.body, 'mouseover', function (e, node) {
         that.smallImg = node;
         node.style.opacity = 0.84;
         PopImg.show(e);
       }, this.config.feedSelector);
-      delegate(document.body, 'mouseout', function(e, node) {
+      delegate(document.body, 'mouseout', function (e, node) {
         node.style.opacity = '';
         PopImg.hide();
       }, this.config.feedSelector);
-      delegate(document.body, 'mousemove', function(e) {
+      delegate(document.body, 'mousemove', function (e) {
         PopImg.move(e);
       }, this.config.feedSelector);
     },
 
     // 获得当前站点名
-    _getSiteName: function() {
+    _getSiteName: function () {
       var i, each;
-      for(each in MIPConfig) {
+      for (each in MIPConfig) {
         if (location.href.indexOf(each) != -1) {
           return each;
         }
@@ -387,7 +390,7 @@
       return '';
     },
 
-    init: function() {
+    init: function () {
       // 初始化两个节点
       PopImg.init();
       // 准备必要的数据
@@ -413,10 +416,10 @@
 
   function offset(source) {
     var pt = {
-      x:0,
-      y:0,
-      width:source.offsetWidth,
-      height:source.offsetHeight
+      x: 0,
+      y: 0,
+      width: source.offsetWidth,
+      height: source.offsetHeight
     };
     do {
       pt.x += source.offsetLeft;
@@ -428,7 +431,7 @@
 
   function delegate(el, eventType, handler, selector) {
     el = el || document;
-    el.addEventListener(eventType, function(e) {
+    el.addEventListener(eventType, function (e) {
       var node = getHandlerNode(e, selector, el);
       node && handler.call(el, e, node);
     }, false);
@@ -439,7 +442,7 @@
       el = el || document;
       if (e && e.target && selector) {
         nodes = el.querySelectorAll(selector);
-        for(i=0; i<nodes.length; i++) {
+        for (i = 0; i < nodes.length; i++) {
           if (e.target == nodes[i] || isInDomChain(e.target, nodes[i], el)) {
             return nodes[i];
           }
@@ -485,24 +488,24 @@
   var imgReady = (function () {
     var list = [], intervalId = null,
 
-    // 用来执行队列
-    tick = function () {
-      var i = 0;
-      for (; i < list.length; i++) {
-        list[i].end ? list.splice(i--, 1) : list[i]();
-      }
-      !list.length && stop();
-    },
+      // 用来执行队列
+      tick = function () {
+        var i = 0;
+        for (; i < list.length; i++) {
+          list[i].end ? list.splice(i--, 1) : list[i]();
+        }
+        !list.length && stop();
+      },
 
-    // 停止所有定时器队列
-    stop = function () {
-      window.clearInterval(intervalId);
-      intervalId = null;
-    };
+      // 停止所有定时器队列
+      stop = function () {
+        window.clearInterval(intervalId);
+        intervalId = null;
+      };
 
     return function (url, ready, load, error) {
       var onready, width, height, newWidth, newHeight,
-      img = new Image();
+        img = new Image();
 
       img.src = url;
 
@@ -559,7 +562,7 @@
   })();
 
   // GM_addStyle function is not existed in chrome 27
-  var GM_addStyle = GM_addStyle || function(css) {
+  var GM_addStyle = GM_addStyle || function (css) {
     var style = document.createElement("style");
     style.type = "text/css";
     style.appendChild(document.createTextNode(css));
@@ -569,7 +572,8 @@
   // 增加自定义样式
   GM_addStyle("\
   #miniblogImgPop {\
-    border: 7px solid rgba(255,255,255,1);\
+    border: 0px solid rgba(255,255,255,1);\
+    border-radius: 8px;\
     box-shadow: 0 1px 30px rgba(0, 0, 0, 0.75), 0 0 40px rgba(0, 0, 0, 0.25) inset;\
     z-index: 12345;\
     opacity: 0;\
